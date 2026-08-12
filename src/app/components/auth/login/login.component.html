@@ -1,0 +1,266 @@
+<p-toast position="top-right"></p-toast>
+
+<div class="min-h-screen bg-[#f8f8f7] flex flex-col">
+
+  <!-- Header -->
+<header
+  class="h-16 border-b border-gray-200 bg-white
+         flex items-center justify-between
+         px-6 sm:px-10"
+>
+
+  <!-- Language Button -->
+  <button
+    type="button"
+    (click)="toggleLanguage()"
+    class="flex items-center justify-center
+           w-9 h-9 rounded-lg
+           text-gray-500
+           hover:text-[#9a7200]
+           hover:bg-yellow-50
+           transition duration-200"
+    [title]="
+      translation.lang() === 'ar'
+        ? 'English'
+        : 'العربية'
+    "
+  >
+    <i class="pi pi-language text-lg"></i>
+  </button>
+
+
+  <!-- Logo -->
+  <h1
+    class="text-2xl sm:text-3xl
+           font-bold text-[#9a7200]"
+  >
+    Gold Era
+  </h1>
+
+
+  <!-- Empty Space -->
+  <div class="w-9"></div>
+
+</header>
+
+
+  <!-- Main -->
+  <main class="flex-1 flex items-center justify-center px-4 py-10 sm:px-6">
+
+    <!-- Login Card -->
+    <div class="w-full max-w-md rounded-xl bg-white shadow-sm border border-gray-100 px-6 py-8 sm:px-8 sm:py-10">
+
+      <!-- Logo -->
+      <div class="flex justify-center mb-6">
+
+        <div class="w-16 h-16 sm:w-20 sm:h-20 bg-black border border-yellow-500
+                 flex items-center justify-center shadow-sm">
+
+          <span class="text-yellow-500 font-bold text-xs text-center leading-tight">
+            GOLD<br>
+            ERA
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <!-- Title -->
+      <div class="text-center mb-8">
+
+        <h2 class="text-xl sm:text-2xl font-semibold text-gray-800">
+          {{ translation.translate('LOGIN.WELCOME') }}
+        </h2>
+
+        <p class="mt-2 text-sm text-gray-500">
+          {{ translation.translate('LOGIN.WELCOME_MESSAGE') }}
+        </p>
+
+      </div>
+
+
+      <!-- Form -->
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-5">
+
+        <!-- Email -->
+        <div>
+
+          <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+            {{ translation.translate('LOGIN.EMAIL') }}
+          </label>
+
+
+          <input id="email" type="email" formControlName="email" [placeholder]="
+  translation.translate('LOGIN.EMAIL_PLACEHOLDER')
+" class="w-full border-0 border-b border-gray-300
+                   bg-transparent px-0 py-3
+                   text-sm text-gray-800
+                   placeholder-gray-300
+                   outline-none
+                   transition
+                   focus:border-yellow-500
+                   focus:ring-0" [class.border-red-500]="
+              loginForm.controls.email.invalid &&
+              loginForm.controls.email.touched
+            " />
+
+
+          <!-- Email Error -->
+          @if (
+          loginForm.controls.email.invalid &&
+          loginForm.controls.email.touched
+          ) {
+
+          <p class="mt-1 text-xs text-red-500">
+            {{ emailError }}
+          </p>
+
+          }
+
+        </div>
+
+
+        <!-- Password -->
+        <div>
+
+          <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+            {{ translation.translate('LOGIN.PASSWORD') }}
+          </label>
+
+
+          <div class="relative">
+
+            <input id="password" [type]="
+                showPassword()
+                  ? 'text'
+                  : 'password'
+              " formControlName="password" [placeholder]="
+  translation.translate('LOGIN.FORGOT_PASSWORD')
+" class="w-full border-0 border-b border-gray-300
+                     bg-transparent px-0 py-3 pr-12
+                     text-sm text-gray-800
+                     placeholder-gray-300
+                     outline-none
+                     transition
+                     focus:border-yellow-500
+                     focus:ring-0" [class.border-red-500]="
+                loginForm.controls.password.invalid &&
+                loginForm.controls.password.touched
+              " />
+
+
+            <!-- Show / Hide -->
+            <button type="button" (click)="togglePassword()" class="absolute right-0 top-1/2
+                     -translate-y-1/2
+                     text-gray-400
+                     hover:text-[#9a7200]
+                     transition">
+
+              <i [class]="showPassword()
+                  ? 'pi pi-eye-slash'
+                  : 'pi pi-eye'" class="text-lg">
+              </i>
+
+            </button>
+
+          </div>
+
+
+          <!-- Password Error -->
+          @if (
+          loginForm.controls.password.invalid &&
+          loginForm.controls.password.touched
+          ) {
+
+          <p class="mt-1 text-xs text-red-500">
+            {{ passwordError }}
+          </p>
+
+          }
+
+        </div>
+
+
+        <!-- Forgot Password -->
+        <div class="flex justify-end">
+
+          <a routerLink="/forgot-password" class="text-xs text-[#9a7200]
+                   hover:text-yellow-600
+                   transition">
+           {{ translation.translate('LOGIN.FORGOT_PASSWORD') }}
+          </a>
+
+        </div>
+
+
+        <!-- Login Button -->
+        <button type="submit" [disabled]="submitting()" class="w-full bg-[#9a7200]
+                 hover:bg-[#eab94f]
+                 disabled:bg-gray-300
+                 disabled:cursor-not-allowed
+                 active:scale-[0.99]
+                 text-white
+                 font-medium
+                 text-sm
+                 py-3
+                 transition
+                 duration-200">
+
+          @if (submitting()) {
+
+          <span class="flex items-center justify-center gap-2">
+
+            <span class="w-4 h-4 border-2 border-white
+                       border-t-transparent rounded-full
+                       animate-spin">
+            </span>
+
+           {{ translation.translate('LOGIN.SIGNING_IN') }}
+          </span>
+
+          } @else {
+
+        {{ translation.translate('LOGIN.LOGIN_BUTTON') }}
+
+          }
+
+        </button>
+
+      </form>
+
+    </div>
+
+  </main>
+
+
+  <!-- Footer -->
+  <footer class="border-t border-gray-200 bg-white px-6 py-5">
+
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row
+             items-center justify-between gap-4">
+
+      <!-- Links -->
+      <div class="flex flex-wrap justify-center gap-5
+               text-[10px] sm:text-xs text-gray-500">
+      </div>
+
+
+      <!-- Footer Logo -->
+      <div class="text-center sm:text-right">
+
+        <p class="text-lg font-semibold text-[#9a7200]">
+          Gold Era
+        </p>
+
+        <p class="text-[10px] text-gray-400">
+         {{ translation.translate('FOOTER.COPYRIGHT') }}
+        </p>
+
+      </div>
+
+    </div>
+
+  </footer>
+
+</div>

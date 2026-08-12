@@ -1,0 +1,176 @@
+<!-- زرار الفتح - Mobile -->
+<button
+  type="button"
+  (click)="toggleSidebar()"
+  class="fixed top-3 right-3 z-[1001] md:hidden
+         bg-[#0b1220] text-amber-400 p-2.5 rounded-lg text-lg
+         border border-amber-500/30 shadow-lg shadow-black/40
+         hover:bg-amber-400 hover:text-[#0b1220]
+         transition-all duration-200"
+>
+  <i class="pi" [class.pi-bars]="!isOpen()" [class.pi-times]="isOpen()"></i>
+</button>
+
+
+<!-- Overlay - Mobile -->
+@if (isOpen()) {
+  <div
+    (click)="closeSidebar()"
+    class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[998] md:hidden"
+  ></div>
+}
+
+
+<!-- Sidebar -->
+<aside
+  class="fixed md:sticky
+         top-0 right-0
+         h-screen
+         bg-[#0b1220] text-gray-300
+         z-[999]
+         transition-all duration-300 ease-in-out
+         translate-x-full md:translate-x-0
+         flex flex-col"
+  [class.translate-x-0]="isOpen()"
+  [class.w-64]="!isCollapsed()"
+  [class.w-20]="isCollapsed()"
+>
+
+  <!-- Logo -->
+  <div class="px-4 py-7 flex flex-col items-center gap-2">
+    <div
+      class="w-14 h-14 rounded-full
+             bg-[#0f1a30]
+             border border-amber-500/40
+             flex items-center justify-center
+             shadow-[0_0_15px_rgba(217,164,65,0.15)]
+             shrink-0"
+    >
+      <img src="logo.png" class="w-8 h-8 object-contain" alt="Logo" />
+    </div>
+
+    <span
+      class="text-amber-400 text-xs font-semibold tracking-widest transition-all whitespace-nowrap"
+      [class.hidden]="isCollapsed()"
+    >
+      GOLD ERA
+    </span>
+  </div>
+
+
+  <!-- Navigation -->
+  <nav class="flex flex-col gap-1 px-3 mt-4">
+
+    <!-- Products -->
+    <a
+      routerLink="/dashboard/products"
+      routerLinkActive="bg-amber-400 text-[#0b1220] font-semibold shadow-md"
+      [routerLinkActiveOptions]="{ exact: true }"
+      (click)="closeSidebar()"
+      [title]="isCollapsed() ? 'Products' : ''"
+      class="flex items-center gap-3
+             px-4 py-3
+             rounded-lg
+             text-gray-300
+             hover:bg-amber-400
+             hover:text-[#0b1220]
+             focus:bg-amber-400
+             focus:text-[#0b1220]
+             focus:outline-none
+             transition-all duration-200"
+      [class.justify-center]="isCollapsed()"
+    >
+      <i class="pi pi-box text-base shrink-0"></i>
+      <span class="text-sm whitespace-nowrap" [class.hidden]="isCollapsed()">
+        Products
+      </span>
+    </a>
+
+
+    <!-- Registration -->
+    <a
+      routerLink="/dashboard/registeration"
+      routerLinkActive="bg-amber-400 text-[#0b1220] font-semibold shadow-md"
+      [routerLinkActiveOptions]="{ exact: true }"
+      (click)="closeSidebar()"
+      [title]="isCollapsed() ? 'Registration' : ''"
+      class="flex items-center gap-3
+             px-4 py-3
+             rounded-lg
+             text-gray-300
+             hover:bg-amber-400
+             hover:text-[#0b1220]
+             focus:bg-amber-400
+             focus:text-[#0b1220]
+             focus:outline-none
+             transition-all duration-200"
+      [class.justify-center]="isCollapsed()"
+    >
+      <i class="pi pi-user-plus text-base shrink-0"></i>
+      <span class="text-sm whitespace-nowrap" [class.hidden]="isCollapsed()">
+        Registration
+      </span>
+    </a>
+
+  </nav>
+
+
+  <!-- Footer: Settings + Logout + Collapse Toggle -->
+  <div class="mt-auto px-3 pb-3 flex flex-col gap-1 border-t border-white/5 pt-3">
+
+    <!-- Settings -->
+    
+
+    <!-- Logout -->
+    <button
+      type="button"
+      (click)="logout()"
+      [title]="isCollapsed() ? 'Log Out' : ''"
+      class="flex items-center gap-3
+             px-4 py-3
+             rounded-lg
+             text-gray-300
+             hover:bg-red-500/90
+             hover:text-white
+             focus:bg-red-500/90
+             focus:text-white
+             focus:outline-none
+             transition-all duration-200"
+      [class.justify-center]="isCollapsed()"
+    >
+      <i class="pi pi-sign-out text-base shrink-0"></i>
+      <span class="text-sm whitespace-nowrap" [class.hidden]="isCollapsed()">
+        Log Out
+      </span>
+    </button>
+
+    <!-- Collapse Toggle -->
+    <button
+      type="button"
+      (click)="toggleCollapsed()"
+      class="hidden md:flex items-center
+             gap-3
+             px-4 py-3
+             rounded-lg
+             text-gray-300
+             hover:bg-amber-400
+             hover:text-[#0b1220]
+             focus:bg-amber-400
+             focus:text-[#0b1220]
+             focus:outline-none
+             transition-all duration-200"
+      [class.justify-center]="isCollapsed()"
+    >
+      <i
+        class="pi text-sm shrink-0"
+        [class.pi-angle-right]="!isCollapsed()"
+        [class.pi-angle-left]="isCollapsed()"
+      ></i>
+      <span class="text-sm whitespace-nowrap" [class.hidden]="isCollapsed()">
+        Collapse
+      </span>
+    </button>
+
+  </div>
+
+</aside>
