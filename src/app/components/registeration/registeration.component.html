@@ -1,1 +1,28 @@
-<p>registeration works!</p>
+<app-header
+  [title]="translation.translate('MACHINES.TITLE')"
+  icon="pi-cog"
+  [buttons]="headerButtons()">
+</app-header>
+
+<div class="
+    p-6 min-h-screen
+
+    bg-[#FAF7F0]
+    dark:bg-[#080d18]
+
+    transition-colors duration-300
+  ">
+
+
+  <app-shared-table
+    [columns]="tableColumns"
+    [data]="machines()"
+    [actions]="tableActions"
+    [loading]="loading()"
+
+    [showPagination]="false"
+
+    [emptyMessage]="'NO_MACHINES_FOUND'"
+  />
+
+</div>

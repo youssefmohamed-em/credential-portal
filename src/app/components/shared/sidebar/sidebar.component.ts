@@ -1,30 +1,31 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, input, output } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { TranslationService } from '../../../services/translate.service';
 
 @Component({
   selector: 'app-sidebar',
-  imports: [RouterLink,RouterLinkActive],
+  imports: [RouterLink, RouterLinkActive],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.css'
 })
 export class SidebarComponent {
-  isOpen = signal(false);
-  isCollapsed= signal(false);
-  private router = inject(Router)
+  // جاي من الأب (Layout/Dashboard)
+  isOpen = input(false);
+  isCollapsed = input(false);
 
-toggleSidebar() {
-    this.isOpen.update((value) => !value);
-  }  
+  // طالع للأب
+  closeSidebar = output<void>();
+  toggleCollapsed = output<void>();
 
-  closeSidebar() {
-    this.isOpen.set(false);
+  private router = inject(Router);
+  public translation = inject(TranslationService);
+
+  toggleLanguage() {
+    this.translation.toggleLang();
   }
-  toggleCollapsed(){
-    this.isCollapsed.update(value =>!value)
+
+  logout() {
+    localStorage.removeItem('token');
+    this.router.navigate(['/login']);
   }
-logout() {
-  // مثال: امسح التوكن ووديه على صفحة اللوجين
-  localStorage.removeItem('token');
-  this.router.navigate(['/login']);
-}
 }

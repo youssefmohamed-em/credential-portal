@@ -10,13 +10,17 @@ import { MessageService } from 'primeng/api';
 import { provideTranslateService } from '@ngx-translate/core';
 import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { authInterceptor } from './core/interceptor/auth.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [provideZoneChangeDetection({ eventCoalescing: true }), provideRouter(routes),
 provideAnimationsAsync(),
 MessageService,
-provideHttpClient(),
+provideHttpClient(
+
+  withInterceptors([authInterceptor])
+),
    providePrimeNG({
       theme: {
         preset: Aura

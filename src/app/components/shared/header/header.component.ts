@@ -17,6 +17,6 @@ export class HeaderComponent {
   @Input() title='';
   @Input () description ='';
   @Input() icon = '';
-  @Input() button?: HeaderButton;
+   @Input() buttons: HeaderButton[] = [];
 
 }

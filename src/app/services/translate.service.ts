@@ -8,20 +8,47 @@ type Dict = Record<Lang, Record<string, string>>;
 
 @Injectable({ providedIn: 'root' })
 export class TranslationService {
-      private readonly STORAGE_LANG = 'lang';
-      private readonly STORAGE_DIR = 'dir';
+  private readonly STORAGE_LANG = 'lang';
+  private readonly STORAGE_DIR = 'dir';
 
-      private initialLang = (localStorage.getItem(this.STORAGE_LANG) as Lang) || 'en';
-      private initialDir: Dir =
-            (localStorage.getItem(this.STORAGE_DIR) as Dir) ||
-            (this.initialLang === 'ar' ? 'rtl' : 'ltr');
+  private initialLang = (localStorage.getItem(this.STORAGE_LANG) as Lang) || 'en';
+  private initialDir: Dir =
+    (localStorage.getItem(this.STORAGE_DIR) as Dir) ||
+    (this.initialLang === 'ar' ? 'rtl' : 'ltr');
 
-      lang = signal<Lang>(this.initialLang);
-      dir = signal<Dir>(this.initialDir);
+  lang = signal<Lang>(this.initialLang);
+  dir = signal<Dir>(this.initialDir);
 
-      private dict: Dict = {
-           en:{
-              // Login
+  private dict: Dict = {
+    en: {
+
+
+
+// Products
+'PRODUCTS.TITLE': 'Products',
+'PRODUCTS.DESCRIPTION': 'Manage Your Products',
+'PRODUCTS.ADD': 'Add Product',
+'PRODUCTS.WEIGHT': 'Weight',
+'PRODUCTS.PRICE': 'Price',
+'PRODUCTS.NOT_SPECIFIED': 'Not Specified',
+'PRODUCTS.EMPTY': 'No Products Available',
+
+
+      //sidebar
+
+      'SIDEBAR.PRODUCTS': 'Products',
+      'SIDEBAR.MACHINES': 'Machines',
+      'SIDEBAR.LOGOUT': 'Log Out',
+      'SIDEBAR.COLLAPSE': 'Collapse',
+
+      //machines
+      'MACHINES.TITLE': 'Machines',
+      'MACHINES.ADD': 'Add Machine',
+
+      //dashboard
+      'DASHBOARD':'Dashboard',
+
+      // Login
       'LOGIN.SIGN_IN': 'Sign In',
       'LOGIN.WELCOME': 'Welcome Back',
       'LOGIN.WELCOME_MESSAGE':
@@ -63,6 +90,7 @@ export class TranslationService {
       // Messages
       'MESSAGES.SUCCESS':
         'Success',
+        'COMMON.REFRESH':'Refresh',
 
       'MESSAGES.LOGIN_SUCCESS':
         'Login successful',
@@ -73,9 +101,35 @@ export class TranslationService {
       // Footer
       'FOOTER.COPYRIGHT':
         '© 2026 Gold Era. All Rights Reserved.'
-           },
+    },
 
-            ar:{
+    ar: {
+
+
+// Products
+'PRODUCTS.TITLE': 'المنتجات',
+'PRODUCTS.DESCRIPTION': 'إدارة المنتجات',
+'PRODUCTS.ADD': 'إضافة منتج',
+'PRODUCTS.WEIGHT': 'الوزن',
+'PRODUCTS.PRICE': 'السعر',
+'PRODUCTS.NOT_SPECIFIED': 'غير محدد',
+'PRODUCTS.EMPTY': 'لا توجد منتجات حالياً',
+
+
+      //machines
+      'MACHINES.TITLE': 'الماكينات',
+      'MACHINES.ADD': 'إضافة ماكينة',
+
+      // Sidebar
+      'SIDEBAR.PRODUCTS': 'المنتجات',
+      'SIDEBAR.MACHINES': 'الماكينات',
+      'SIDEBAR.LOGOUT': 'تسجيل الخروج',
+      'SIDEBAR.COLLAPSE': 'تصغير',
+
+
+      //dashboard
+      'DASHBOARD':"لوحة التحكم ",
+
 
       // Login
       'LOGIN.SIGN_IN':
@@ -127,6 +181,7 @@ export class TranslationService {
       // Messages
       'MESSAGES.SUCCESS':
         'نجاح',
+        'COMMON.REFRESH':'تحديث',
 
       'MESSAGES.LOGIN_SUCCESS':
         'تم تسجيل الدخول بنجاح',
@@ -137,41 +192,41 @@ export class TranslationService {
       // Footer
       'FOOTER.COPYRIGHT':
         '© 2026 Gold Era. جميع الحقوق محفوظة.'
-            }
-      };
+    }
+  };
 
-      t = (key: string) => computed(() => this.dict[this.lang()]?.[key] ?? key);
+  t = (key: string) => computed(() => this.dict[this.lang()]?.[key] ?? key);
 
-      translate(key: string): string {
-            return this.dict[this.lang()]?.[key] ?? key;
-      }
+  translate(key: string): string {
+    return this.dict[this.lang()]?.[key] ?? key;
+  }
 
-      constructor() {
-            effect(() => {
-                  const d = this.dir();
-                  const l = this.lang();
-                  document.documentElement.setAttribute('dir', d);
-                  document.documentElement.setAttribute('lang', l);
-                  document.body.classList.toggle('rtl', d === 'rtl');
-                  localStorage.setItem(this.STORAGE_DIR, d);
-                  localStorage.setItem(this.STORAGE_LANG, l);
-            });
-      }
+  constructor() {
+    effect(() => {
+      const d = this.dir();
+      const l = this.lang();
+      document.documentElement.setAttribute('dir', d);
+      document.documentElement.setAttribute('lang', l);
+      document.body.classList.toggle('rtl', d === 'rtl');
+      localStorage.setItem(this.STORAGE_DIR, d);
+      localStorage.setItem(this.STORAGE_LANG, l);
+    });
+  }
 
-      setLang(lang: Lang) {
-            this.lang.set(lang);
-            this.dir.set(lang === 'ar' ? 'rtl' : 'ltr');
-      }
+  setLang(lang: Lang) {
+    this.lang.set(lang);
+    this.dir.set(lang === 'ar' ? 'rtl' : 'ltr');
+  }
 
-      setDir(dir: Dir) {
-            this.dir.set(dir);
-      }
+  setDir(dir: Dir) {
+    this.dir.set(dir);
+  }
 
-      toggleLang() {
-            this.setLang(this.lang() === 'en' ? 'ar' : 'en');
-      }
+  toggleLang() {
+    this.setLang(this.lang() === 'en' ? 'ar' : 'en');
+  }
 
-      toggleDir() {
-            this.dir.set(this.dir() === 'ltr' ? 'rtl' : 'ltr');
-      }
+  toggleDir() {
+    this.dir.set(this.dir() === 'ltr' ? 'rtl' : 'ltr');
+  }
 }

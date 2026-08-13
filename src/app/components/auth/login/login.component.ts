@@ -27,6 +27,11 @@ import {
 
 import { TranslationService } from '../../../services/translate.service';
 
+import {
+  AuthService,
+  LoginRequest
+} from '../../../services/auth.service';
+
 
 @Component({
   selector: 'app-login',
@@ -44,6 +49,10 @@ import { TranslationService } from '../../../services/translate.service';
 })
 export class LoginComponent {
 
+  // =========================
+  // Services
+  // =========================
+
   private fb = inject(FormBuilder);
 
   private router = inject(Router);
@@ -51,7 +60,9 @@ export class LoginComponent {
   private messageService =
     inject(MessageService);
 
-  // Translation
+  private authService =
+    inject(AuthService);
+
   public translation =
     inject(TranslationService);
 
@@ -101,7 +112,7 @@ export class LoginComponent {
 
   toggleLanguage(): void {
 
-   this.translation.toggleLang();
+    this.translation.toggleLang();
 
   }
 
@@ -112,6 +123,7 @@ export class LoginComponent {
 
   onSubmit(): void {
 
+    // Validate form
     if (this.loginForm.invalid) {
 
       this.loginForm.markAllAsTouched();
@@ -119,10 +131,28 @@ export class LoginComponent {
       return;
     }
 
+
+    // Start loading
     this.submitting.set(true);
 
-    const loginData =
+
+    // Get form values
+    const formData =
       this.loginForm.getRawValue();
+
+
+    // =========================
+    // Prepare API Request
+    // =========================
+
+    const loginData: LoginRequest = {
+
+      username: formData.email,
+
+      password: formData.password
+
+    };
+
 
     console.log(
       'Login Data:',
@@ -130,39 +160,89 @@ export class LoginComponent {
     );
 
 
-    setTimeout(() => {
+    // =========================
+    // Call API
+    // =========================
 
-      console.log(
-        'Login Successful'
-      );
+    this.authService
+      .login(loginData)
+      .subscribe({
 
-      this.submitting.set(false);
+        // =========================
+        // Success
+        // =========================
+
+        next: (response) => {
+
+         
+this.authService.saveLogin(response); 
+
+          this.submitting.set(false);
 
 
-      this.messageService.add({
+          this.messageService.add({
 
-        severity: 'success',
+            severity: 'success',
 
-        summary:
-          this.translation.translate(
-            'MESSAGES.SUCCESS'
-          ),
+            summary:
+              this.translation.translate(
+                'MESSAGES.SUCCESS'
+              ),
 
-        detail:
-          this.translation.translate(
-            'MESSAGES.LOGIN_SUCCESS'
-          ),
+            detail:
+              this.translation.translate(
+                'MESSAGES.LOGIN_SUCCESS'
+              ),
 
-        life: 3000
+            life: 3000
+
+          });
+
+
+          // Navigate Dashboard
+
+          this.router.navigate([
+            '/dashboard'
+          ]);
+
+        },
+
+
+        // =========================
+        // Error
+        // =========================
+
+        error: (error) => {
+
+          console.error(
+            'Login Error:',
+            error
+          );
+
+
+          this.submitting.set(false);
+
+
+          this.messageService.add({
+
+            severity: 'error',
+
+            summary:
+              this.translation.translate(
+                'MESSAGES.ERROR'
+              ),
+
+            detail:
+              error?.error?.message ||
+              'Invalid email or password',
+
+            life: 4000
+
+          });
+
+        }
 
       });
-
-
-      this.router.navigate([
-        '/dashboard'
-      ]);
-
-    }, 1500);
 
   }
 
