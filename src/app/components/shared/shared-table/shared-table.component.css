@@ -1,0 +1,40 @@
+:host ::ng-deep .custom-table {
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+}
+
+/* Light Mode */
+:host ::ng-deep .custom-table .p-datatable-header,
+:host ::ng-deep .custom-table .p-datatable-thead > tr > th {
+    background: #ffffff;
+    color: #1f2937;
+    border-color: #e5e7eb;
+    font-weight: 600;
+}
+
+:host ::ng-deep .custom-table .p-datatable-tbody > tr {
+    background: #ffffff;
+    color: #374151;
+}
+
+:host ::ng-deep .custom-table .p-datatable-tbody > tr:hover {
+    background: #f8fafc;
+}
+
+/* Dark Mode */
+.dark :host ::ng-deep .custom-table .p-datatable-header,
+.dark :host ::ng-deep .custom-table .p-datatable-thead > tr > th {
+    background: #1e1e22;
+    color: white;
+    border-color: #333;
+}
+
+.dark :host ::ng-deep .custom-table .p-datatable-tbody > tr {
+    background: #18181b;
+    color: #e5e7eb;
+}
+
+.dark :host ::ng-deep .custom-table .p-datatable-tbody > tr:hover {
+    background: #27272a;
+}   

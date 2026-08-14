@@ -1,7 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-
+import { TableModule } from 'primeng/table';
+import { ButtonModule } from 'primeng/button';
+import { TagModule } from 'primeng/tag';
+import { PaginatorModule } from 'primeng/paginator';
+import { ToastModule } from 'primeng/toast';
+import { RippleModule } from 'primeng/ripple';
+import { Tooltip } from "primeng/tooltip";
 export interface SharedTableColumn {
   key: string;
   label: string;
@@ -60,7 +66,12 @@ export interface SharedTableAction {
 @Component({
   selector: 'app-shared-table',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TableModule,
+    ButtonModule,
+    TagModule,
+    PaginatorModule,
+    ToastModule,
+    RippleModule, Tooltip],
   templateUrl: './shared-table.component.html',
   styleUrl: './shared-table.component.css',
 })
@@ -83,6 +94,8 @@ export class SharedTableComponent {
 
   @Input() totalElements = 0;
 
+@Input() menuActions: SharedTableAction[] = [];
+
   @Output()
   pageChange = new EventEmitter<number>();
 
@@ -104,6 +117,7 @@ export class SharedTableComponent {
   filterValues: { [key: string]: any } = {};
 
   pageSizeOptions = [10, 25, 50, 100];
+  openedRow: any = null;
 
   // ---- generic cell helpers ----
   getCellValue(row: any, column: SharedTableColumn): any {
@@ -132,6 +146,10 @@ export class SharedTableComponent {
     }
   }
 
+
+toggleMenu(row: any) {
+  this.openedRow = this.openedRow === row ? null : row;
+}
   getBadgeClasses(color: string): string {
     const map: { [key: string]: string } = {
       primary: 'bg-blue-100 text-blue-700 ring-blue-600/20',
@@ -156,9 +174,11 @@ export class SharedTableComponent {
     return map[color || 'secondary'] || map['secondary'];
   }
 
-  visibleActions(row: any): SharedTableAction[] {
-    return this.actions.filter((a) => !a.condition || a.condition(row));
-  }
+ visibleActions(row: any): SharedTableAction[] {
+  return this.menuActions.filter(
+    (a) => !a.condition || a.condition(row)
+  );
+}
 
   // ---- sorting ----
   onSort(column: SharedTableColumn): void {
@@ -225,7 +245,7 @@ export class SharedTableComponent {
     return row?.id ?? index;
   }
 
-  get colSpan(): number {
-    return this.columns.length + (this.actions.length ? 1 : 0);
-  }
+get colSpan(): number {
+  return this.columns.length + (this.menuActions.length ? 1 : 0);
+}
 }

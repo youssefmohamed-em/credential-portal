@@ -2,10 +2,19 @@
   display: block;
 }
 
+/* Keep the field hints readable on the light login card. */
+#email::placeholder,
+#password::placeholder {
+  color: #4b5563;
+  opacity: 1;
+}
+
 /* Remove browser autofill background flash, keep it consistent with the card */
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus {
   -webkit-box-shadow: 0 0 0 1000px #ffffff inset;
+  -webkit-text-fill-color: #111827;
+  caret-color: #111827;
   transition: background-color 9999s ease-in-out 0s;
 }

@@ -93,7 +93,7 @@ export class TranslationService {
         'COMMON.REFRESH':'Refresh',
 
       'MESSAGES.LOGIN_SUCCESS':
-        'Login successful',
+        'Welcome back',
 
       'MESSAGES.ERROR':
         'Error',
@@ -184,7 +184,7 @@ export class TranslationService {
         'COMMON.REFRESH':'تحديث',
 
       'MESSAGES.LOGIN_SUCCESS':
-        'تم تسجيل الدخول بنجاح',
+        '\u0645\u0631\u062d\u0628\u064b\u0627 \u0628\u0639\u0648\u062f\u062a\u0643',
 
       'MESSAGES.ERROR':
         'خطأ',

@@ -17,8 +17,7 @@ export class ProductsComponent implements OnInit {
   selectedProduct = signal<any | null>(null);
   private productService = inject(ProductService);
   public translation = inject(TranslationService);
-   private messageService =
-      inject(MessageService);
+   private messageService =  inject(MessageService);
   products: any[] = [];
 
  headerButtons  = computed<HeaderButton[]> ( ()=>[

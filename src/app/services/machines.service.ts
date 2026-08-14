@@ -19,6 +19,7 @@ export interface CreateMachineResponse {
   apiKey: string;
   status: string;
 }
+export type MachineStatus ='ONLINE'|'OFFLINE';
 
 @Injectable({
   providedIn: 'root'
@@ -39,5 +40,12 @@ export class MachinesService {
       this.endpoint,
       data
     );
+  }
+
+  updateMachineStatus(id:number, status:MachineStatus){
+    return this.http.patch<Machine>(
+      `${this.endpoint}/${id}/status`,
+      {status}
+    )
   }
 }
