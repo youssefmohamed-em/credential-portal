@@ -1,930 +1,335 @@
-<div
-    class="
-        overflow-hidden
-        rounded-2xl
-        border border-gray-200
-        bg-white
-        shadow-sm
-
-        dark:border-slate-700
-        dark:bg-slate-900
-
-        transition-colors
-        duration-200
-    "
->
-
-    <p-table
-        [value]="data"
-        [loading]="loading"
-        dataKey="id"
-        responsiveLayout="scroll"
-        styleClass="p-datatable-sm"
-    >
-
-        <!-- ================= HEADER ================= -->
-
-        <ng-template pTemplate="header">
-
-            <tr>
-
-                @for(column of columns; track column.key) {
-
-                    <th
-                        [style.width]="column.width"
-
-                        class="
-                            px-6
-                            py-4
-
-                            !bg-gray-50
-                            !text-gray-700
-
-                            border-b
-                            border-gray-200
-
-                            text-start
-                            align-middle
-
-                            text-xs
-                            font-semibold
-                            uppercase
-                            tracking-wide
-
-                            dark:!bg-slate-800
-                            dark:!text-gray-200
-                            dark:border-slate-700
-
-                            transition-colors
-                            duration-200
-                        "
-
-                        [class.cursor-pointer]="column.sortable"
-                        [class.select-none]="column.sortable"
-
-                        [class.hover:!bg-gray-100]="column.sortable"
-                        [class.dark:hover:!bg-slate-700]="column.sortable"
-
-                        (click)="onSort(column)"
-                    >
-
-                        <div
-                            class="
-                                flex
-                                items-center
-                                gap-2
-                            "
-
-                            [class.justify-center]="
-                                column.align === 'center'
-                            "
-
-                            [class.justify-end]="
-                                column.align === 'right'
-                            "
-                        >
-
-                            <span>
-                                {{ translation.translate(column.label) }}
-                            </span>
-
-                            @if(column.sortable) {
-
-                                <p-sortIcon
-                                    [field]="column.key"
-
-                                    class="
-                                        !text-gray-400
-                                        dark:!text-gray-500
-                                    "
-                                >
-                                </p-sortIcon>
-
-                            }
-
-                        </div>
-
-                    </th>
-
-                }
-
-
-                @if(menuActions.length) {
-
-                    <th
-                        class="
-                            w-24
-                            px-6
-                            py-4
-
-                            !bg-gray-50
-                            !text-gray-700
-
-                            border-b
-                            border-gray-200
-
-                            text-center
-
-                            text-xs
-                            font-semibold
-                            uppercase
-                            tracking-wide
-
-                            dark:!bg-slate-800
-                            dark:!text-gray-200
-                            dark:border-slate-700
-
-                            transition-colors
-                            duration-200
-                        "
-                    >
-
-                        {{ translation.translate('TABLE.ACTIONS') }}
-
-                    </th>
-
-                }
-
-            </tr>
-
-        </ng-template>
-
-
-        <!-- ================= BODY ================= -->
-
-        <ng-template pTemplate="body" let-row>
-
-            <tr
-                class="
-                    border-b
-                    border-gray-100
-
-                    !bg-white
-
-                    hover:!bg-amber-50/40
-
-                    dark:border-slate-800
-                    dark:!bg-slate-900
-                    dark:hover:!bg-slate-800/60
-
-                    transition-colors
-                    duration-150
-                "
-            >
-
-                @for(column of columns; track column.key) {
-
-                    <td
-                        class="
-                            px-6
-                            py-4
-
-                            !bg-transparent
-
-                            text-sm
-                            text-gray-700
-
-                            align-middle
-
-                            dark:!text-gray-300
-                        "
-
-                        [class.text-center]="
-                            column.align === 'center'
-                        "
-
-                        [class.text-right]="
-                            column.align === 'right'
-                        "
-                    >
-
-                        @switch(column.type) {
-
-
-                            <!-- BADGE -->
-
-                            @case('badge') {
-
-                                @let badge = getBadge(row, column);
-
-                                <p-tag
-                                    [value]="badge.label"
-                                    [severity]="badge.color"
-
-                                    styleClass="
-                                        !rounded-full
-                                        !px-3
-                                        !py-1
-                                        !text-xs
-                                        !font-semibold
-                                    "
-                                >
-                                </p-tag>
-
-                            }
-
-
-                            <!-- CUSTOM -->
-
-                            @case('custom') {
-
-                                <span
-                                    class="
-                                        inline-flex
-                                        items-center
-                                    "
-
-                                    [innerHTML]="
-                                        getCustomHtml(row, column)
-                                    "
-                                >
-                                </span>
-
-                            }
-
-
-                            <!-- DEFAULT -->
-
-                            @default {
-
-                                <span
-                                    class="
-                                        block
-                                        max-w-xs
-                                        truncate
-
-                                        font-medium
-
-                                        text-gray-800
-
-                                        dark:text-gray-100
-                                    "
-
-                                    [title]="
-                                        getCellValue(row, column)
-                                    "
-                                >
-
-                                    {{ getCellValue(row, column) }}
-
-                                </span>
-
-                            }
-
-                        }
-
-                    </td>
-
-                }
-
-
-                <!-- ACTIONS -->
-
-                @if(menuActions.length) {
-
-                    <td
-                        class="
-                            px-6
-                            py-4
-
-                            !bg-transparent
-
-                            text-center
-                            align-middle
-                        "
-                    >
-
-                        <div
-                            class="
-                                flex
-                                items-center
-                                justify-center
-                                gap-1
-                            "
-                        >
-
-                            @for(
-                                action of visibleActions(row);
-                                track action.label
-                            ) {
-
-                                <p-button
-                                    [icon]="action.icon"
-                                    [text]="true"
-                                    [rounded]="true"
-
-                                    [pTooltip]="
-                                        translation.translate(
-                                            action.label
-                                        )
-                                    "
-
-                                    tooltipPosition="top"
-
-                                    styleClass="
-                                        !h-9
-                                        !w-9
-                                        !p-0
-
-                                        !text-gray-500
-
-                                        hover:!bg-amber-50
-                                        hover:!text-amber-600
-
-                                        dark:!text-gray-400
-
-                                        dark:hover:!bg-amber-500/10
-                                        dark:hover:!text-amber-400
-
-                                        transition-colors
-                                        duration-150
-                                    "
-
-                                    (click)="action.handler(row)"
-                                >
-                                </p-button>
-
-                            }
-
-                        </div>
-
-                    </td>
-
-                }
-
-            </tr>
-
-        </ng-template>
-
-
-        <!-- ================= LOADING ================= -->
-
-        <ng-template pTemplate="loadingbody">
-
-            @for(row of [1,2,3,4,5]; track row) {
-
-                <tr
-                    class="
-                        border-b
-                        border-gray-100
-
-                        !bg-white
-
-                        dark:border-slate-800
-                        dark:!bg-slate-900
-                    "
-                >
-
-                    @for(column of columns; track column.key) {
-
-                        <td class="px-6 py-5">
-
-                            <div
-                                class="
-                                    h-4
-                                    w-3/4
-                                    rounded-md
-
-                                    bg-gray-200
-
-                                    dark:bg-slate-700
-
-                                    animate-pulse
-                                "
-                            >
-                            </div>
-
-                        </td>
-
-                    }
-
-                    @if(menuActions.length) {
-
-                        <td class="px-6 py-5">
-
-                            <div
-                                class="
-                                    mx-auto
-                                    h-8
-                                    w-8
-                                    rounded-full
-
-                                    bg-gray-200
-
-                                    dark:bg-slate-700
-
-                                    animate-pulse
-                                "
-                            >
-                            </div>
-
-                        </td>
-
-                    }
-
-                </tr>
-
-            }
-
-        </ng-template>
-
-
-        <!-- ================= EMPTY ================= -->
-
-        <ng-template pTemplate="emptymessage">
-
-            <tr>
-
-                <td
-                    [attr.colspan]="colSpan"
-
-                    class="
-                        !bg-white
-                        !px-6
-                        !py-16
-
-                        dark:!bg-slate-900
-                    "
-                >
-
-                    <div
-                        class="
-                            flex
-                            flex-col
-                            items-center
-                            justify-center
-                            gap-3
-                        "
-                    >
-
-                        <div
-                            class="
-                                flex
-                                h-14
-                                w-14
-                                items-center
-                                justify-center
-
-                                rounded-full
-
-                                bg-gray-100
-
-                                dark:bg-slate-800
-                            "
-                        >
-
-                            <i
-                                class="
-                                    pi
-                                    pi-inbox
-                                    text-xl
-
-                                    text-gray-400
-
-                                    dark:text-gray-500
-                                "
-                            >
-                            </i>
-
-                        </div>
-
-
-                        <span
-                            class="
-                                text-sm
-                                font-semibold
-
-                                text-gray-700
-
-                                dark:text-gray-200
-                            "
-                        >
-
-                            {{ translation.translate('TABLE.NO_DATA') }}
-
-                        </span>
-
-
-                        <span
-                            class="
-                                text-xs
-
-                                text-gray-400
-
-                                dark:text-gray-500
-                            "
-                        >
-
-                            No records available to display
-
-                        </span>
-
-                    </div>
-
-                </td>
-
-            </tr>
-
-        </ng-template>
-
-    </p-table>
-
-</div>
-
-
-<!-- ================= PAGINATION ================= -->
-
-@if(showPagination && totalElements > 0) {
-
-    <div
-        class="
-            mt-3
-
-            flex
-            flex-col
-            gap-4
-
-            rounded-2xl
-
-            border
-            border-gray-200
-
-            bg-white
-
-            px-6
-            py-4
-
-            text-sm
-            text-gray-600
-
-            shadow-sm
-
-            dark:border-slate-700
-            dark:bg-slate-900
-            dark:text-gray-300
-
-            transition-colors
-            duration-200
-
-            sm:flex-row
-            sm:items-center
-            sm:justify-between
-        "
-    >
-
-        <!-- INFORMATION -->
-
-        <div
-            class="
-                flex
-                items-center
-                gap-4
-            "
+<div class="w-full rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-900">
+
+  <!-- ===================== TOOLBAR ===================== -->
+  <div class="flex flex-col gap-3 border-b border-slate-200 p-4 dark:border-slate-700 sm:flex-row sm:items-center sm:justify-between">
+
+    <!-- Global search -->
+    <!-- <div class="relative w-full sm:max-w-xs">
+      <svg class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 dark:text-slate-500"
+           fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" />
+      </svg>
+      <input
+        type="text"
+        [ngModel]="filterValues['_search']"
+        (ngModelChange)="onGlobalSearch($event)"
+        placeholder="Search..."
+        class="w-full rounded-lg border border-slate-200 bg-slate-50 py-2 pl-9 pr-3 text-sm text-slate-900 placeholder-slate-400 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:placeholder-slate-500 dark:focus:border-blue-400 dark:focus:bg-slate-800"
+      />
+    </div> -->
+
+    <div class="flex items-center gap-2">
+      <!-- Filter toggle -->
+      <button
+        *ngIf="hasFilterableColumns"
+        type="button"
+        pRipple
+        (click)="toggleFilterPanel()"
+        class="relative inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition"
+        [ngClass]="showFilterPanel
+          ? 'border-blue-500 bg-blue-50 text-blue-600 dark:border-blue-400 dark:bg-blue-950/40 dark:text-blue-400'
+          : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'"
+      >
+        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 4h18M6 8h12M9 12h6M11 16h2" />
+        </svg>
+        Filters
+        <span
+          *ngIf="activeFilterCount > 0"
+          class="flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-blue-600 px-1 text-xs font-semibold text-white dark:bg-blue-500"
+        >{{ activeFilterCount }}</span>
+      </button>
+
+      <!-- Clear filters -->
+      <button
+        *ngIf="activeFilterCount > 0"
+        type="button"
+        (click)="clearFilters()"
+        class="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+      >
+        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+        Clear
+      </button>
+    </div>
+  </div>
+
+  <!-- ===================== FILTER PANEL ===================== -->
+  <div
+    *ngIf="showFilterPanel && hasFilterableColumns"
+    class="grid grid-cols-1 gap-3 border-b border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800/50 sm:grid-cols-2 lg:grid-cols-3"
+  >
+    <ng-container *ngFor="let column of columns">
+      <div *ngIf="column.filterable" class="flex flex-col gap-1">
+        <label class="text-xs font-medium text-slate-500 dark:text-slate-400">{{ column.label }}</label>
+
+        <!-- text filter -->
+        <input
+          *ngIf="!column.filterType || column.filterType === 'text'"
+          type="text"
+          [ngModel]="filterValues[column.key]"
+          (ngModelChange)="onFilterInput(column, $event)"
+          [placeholder]="column.label"
+          class="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+        />
+
+        <!-- select filter -->
+        <select
+          *ngIf="column.filterType === 'select'"
+          [ngModel]="filterValues[column.key]"
+          (ngModelChange)="onFilterInput(column, $event)"
+          class="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
         >
+          <option [ngValue]="undefined">All</option>
+          <option *ngFor="let opt of column.filterOptions" [ngValue]="opt.value">{{ opt.label }}</option>
+        </select>
 
-            <span class="whitespace-nowrap">
+        <!-- date filter -->
+        <input
+          *ngIf="column.filterType === 'date'"
+          type="date"
+          [ngModel]="filterValues[column.key]"
+          (ngModelChange)="onFilterInput(column, $event)"
+          class="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-900 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+        />
+      </div>
+    </ng-container>
+  </div>
 
-                {{ translation.translate('TABLE.SHOWING') }}
-
-                <span
-                    class="
-                        font-semibold
-                        text-gray-900
-
-                        dark:text-white
-                    "
-                >
-                    {{ startItem }}
-                </span>
-
-                {{ translation.translate('TABLE.TO') }}
-
-                <span
-                    class="
-                        font-semibold
-                        text-gray-900
-
-                        dark:text-white
-                    "
-                >
-                    {{ endItem }}
-                </span>
-
-                {{ translation.translate('TABLE.OF') }}
-
-                <span
-                    class="
-                        font-semibold
-                        text-gray-900
-
-                        dark:text-white
-                    "
-                >
-                    {{ totalElements }}
-                </span>
-
-                {{ translation.translate('TABLE.RESULTS') }}
-
+  <!-- ===================== TABLE ===================== -->
+  <div class="overflow-x-auto">
+    <table class="w-full border-collapse text-sm">
+      <thead>
+        <tr class="border-b border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-800/60">
+          <th
+            *ngFor="let column of columns"
+            [style.width]="column.width"
+            class="select-none whitespace-nowrap px-4 py-3 font-semibold text-slate-600 dark:text-slate-300"
+            [ngClass]="[getAlignClass(column), column.sortable ? 'cursor-pointer hover:text-slate-900 dark:hover:text-white' : '']"
+            (click)="onSort(column)"
+          >
+            <span class="inline-flex items-center gap-1">
+              {{ column.label }}
+              <ng-container *ngIf="column.sortable">
+                <svg *ngIf="sortKey !== column.key" class="h-3.5 w-3.5 text-slate-300 dark:text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M8 9l4-4 4 4M8 15l4 4 4-4" />
+                </svg>
+                <svg *ngIf="sortKey === column.key && sortDirection === 'asc'" class="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
+                </svg>
+                <svg *ngIf="sortKey === column.key && sortDirection === 'desc'" class="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </ng-container>
             </span>
+          </th>
 
+          <th
+            *ngIf="menuActions.length"
+            class="w-12 whitespace-nowrap px-4 py-3 text-right font-semibold text-slate-600 dark:text-slate-300"
+          ></th>
+        </tr>
+      </thead>
 
-            <div
-                class="
-                    hidden
-                    h-6
+      <tbody>
+        <!-- loading skeleton -->
+        <ng-container *ngIf="loading">
+          <tr *ngFor="let i of [1,2,3,4,5]" class="border-b border-slate-100 dark:border-slate-800">
+            <td [attr.colspan]="colSpan" class="px-4 py-3">
+              <div class="h-4 w-full animate-pulse rounded bg-slate-200 dark:bg-slate-700"></div>
+            </td>
+          </tr>
+        </ng-container>
 
-                    border-r
-                    border-gray-200
-
-                    dark:border-slate-700
-
-                    sm:block
-                "
-            >
+        <!-- empty state -->
+        <tr *ngIf="!loading && data.length === 0">
+          <td [attr.colspan]="colSpan" class="px-4 py-16 text-center">
+            <div class="flex flex-col items-center gap-2 text-slate-400 dark:text-slate-500">
+              <svg class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 7.5h18M3 12h18M3 16.5h18" opacity=".4"/>
+                <rect x="3" y="4" width="18" height="16" rx="2" stroke-linecap="round" />
+              </svg>
+              <span class="text-sm font-medium">{{ emptyMessage }}</span>
             </div>
+          </td>
+        </tr>
 
-
-            <!-- ROWS PER PAGE -->
-
-            <div
-                class="
-                    flex
-                    items-center
-                    gap-2
-                "
-            >
-
-                <span class="whitespace-nowrap">
-
-                    {{ translation.translate('TABLE.ROWS_PER_PAGE') }}
-
-                </span>
-
-
-                <select
-                    [ngModel]="pageSize"
-                    (ngModelChange)="onPageSizeSelect($event)"
-
-                    class="
-                        cursor-pointer
-
-                        rounded-lg
-
-                        border
-                        border-gray-200
-
-                        bg-gray-50
-
-                        px-2
-                        py-1.5
-
-                        text-sm
-                        text-gray-800
-
-                        outline-none
-
-                        focus:border-amber-400
-                        focus:ring-2
-                        focus:ring-amber-500/20
-
-                        dark:border-slate-700
-                        dark:bg-slate-800
-                        dark:text-gray-200
-
-                        transition
-                    "
-                >
-
-                    @for(size of pageSizeOptions; track size) {
-
-                        <option [value]="size">
-                            {{ size }}
-                        </option>
-
-                    }
-
-                </select>
-
-            </div>
-
-        </div>
-
-
-        <!-- PAGINATION -->
-
-        <div
-            class="
-                flex
-                items-center
-                justify-center
-                gap-1
-            "
+        <!-- data rows -->
+        <tr
+          *ngFor="let row of data; trackBy: trackByFn"
+          class="border-b border-slate-100 transition-colors last:border-b-0 hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-800/40"
         >
+          <td
+            *ngFor="let column of columns"
+            class="whitespace-nowrap px-4 py-3 text-slate-700 dark:text-slate-200"
+            [ngClass]="getAlignClass(column)"
+            [style.color]="column.cellColor && typeof column.cellColor !== 'string' ? null : null"
+          >
+         <ng-container [ngSwitch]="column.type">
 
-            <!-- FIRST -->
+  <!-- badge -->
+  <p-tag
+    *ngSwitchCase="'badge'"
+    [value]="getBadge(row, column).label"
+    [ngClass]="getBadgeClasses(getBadge(row, column).color)"
+    styleClass="!border-0 !font-medium"
+  ></p-tag>
 
+  <!-- custom html -->
+  <span
+    *ngSwitchCase="'custom'"
+    [innerHTML]="getCustomHtml(row, column)"
+  ></span>
+
+  <!-- actions -->
+  <div
+    *ngSwitchCase="'actions'"
+    class="flex items-center gap-1"
+    [ngClass]="getAlignClass(column)"
+  >
+    <ng-container *ngFor="let action of actions">
+      <button
+        *ngIf="!action.condition || action.condition(row)"
+        type="button"
+        pRipple
+        [pTooltip]="action.label"
+        tooltipPosition="top"
+        (click)="action.handler(row)"
+        class="inline-flex h-8 w-8 items-center justify-center rounded-md transition"
+        [ngClass]="getActionClasses(action.color)"
+      >
+        <i [class]="action.icon"></i>
+      </button>
+    </ng-container>
+  </div>
+
+  <!-- date -->
+  <span *ngSwitchCase="'date'">
+    {{ getCellValue(row, column) | date:'dd/MM/yyyy HH:mm' }}
+  </span>
+
+  <!-- default -->
+  <span *ngSwitchDefault>
+    {{ getCellValue(row, column) }}
+  </span>
+
+</ng-container>
+          </td>
+
+          <!-- row menu trigger -->
+          <td *ngIf="menuActions.length" class="whitespace-nowrap px-4 py-3 text-right">
             <button
-                [disabled]="currentPage === 0"
-                (click)="goToPage(0)"
-
-                class="
-                    flex
-                    h-8
-                    w-8
-                    items-center
-                    justify-center
-
-                    rounded-lg
-
-                    border
-                    border-gray-200
-
-                    bg-white
-
-                    text-gray-500
-
-                    hover:bg-gray-100
-
-                    disabled:cursor-not-allowed
-                    disabled:opacity-40
-
-                    dark:border-slate-700
-                    dark:bg-slate-900
-                    dark:text-gray-400
-                    dark:hover:bg-slate-800
-
-                    transition
-                "
+              type="button"
+              pRipple
+              (click)="toggleMenu($event, row)"
+              class="shared-table-menu-trigger inline-flex h-8 w-8 items-center justify-center rounded-md text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 dark:text-slate-500 dark:hover:bg-slate-700 dark:hover:text-slate-200"
+              [ngClass]="openedRow === row ? 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-200' : ''"
             >
-
-                <i class="pi pi-angle-double-right rtl:rotate-180"></i>
-
+              <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                <circle cx="12" cy="5" r="1.75" />
+                <circle cx="12" cy="12" r="1.75" />
+                <circle cx="12" cy="19" r="1.75" />
+              </svg>
             </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
+  <!-- ===================== PAGINATION ===================== -->
+  <div
+    *ngIf="showPagination && !loading && data.length > 0"
+    class="flex flex-col gap-3 border-t border-slate-200 p-4 dark:border-slate-700 sm:flex-row sm:items-center sm:justify-between"
+  >
+    <div class="flex items-center gap-3 text-sm text-slate-500 dark:text-slate-400">
+      <span>
+        Showing <span class="font-medium text-slate-700 dark:text-slate-200">{{ startItem }}</span>
+        –
+        <span class="font-medium text-slate-700 dark:text-slate-200">{{ endItem }}</span>
+        of
+        <span class="font-medium text-slate-700 dark:text-slate-200">{{ totalElements }}</span>
+      </span>
 
-            <!-- PREVIOUS -->
-
-            <button
-                [disabled]="currentPage === 0"
-                (click)="goToPage(currentPage - 1)"
-
-                class="
-                    flex
-                    h-8
-                    w-8
-                    items-center
-                    justify-center
-
-                    rounded-lg
-
-                    border
-                    border-gray-200
-
-                    bg-white
-
-                    text-gray-500
-
-                    hover:bg-gray-100
-
-                    disabled:cursor-not-allowed
-                    disabled:opacity-40
-
-                    dark:border-slate-700
-                    dark:bg-slate-900
-                    dark:text-gray-400
-                    dark:hover:bg-slate-800
-
-                    transition
-                "
-            >
-
-                <i class="pi pi-angle-right rtl:rotate-180"></i>
-
-            </button>
-
-
-            <!-- PAGE NUMBERS -->
-
-            @for(p of pages; track p) {
-
-                <button
-                    (click)="goToPage(p)"
-
-                    [class]="
-                        p === currentPage
-                            ? '!bg-amber-500 !text-white !border-amber-500 font-semibold'
-                            : 'bg-white dark:bg-slate-900 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-slate-700 hover:bg-gray-100 dark:hover:bg-slate-800'
-                    "
-
-                    class="
-                        flex
-                        h-8
-                        min-w-8
-                        items-center
-                        justify-center
-
-                        rounded-lg
-
-                        border
-
-                        px-2
-
-                        text-sm
-
-                        transition
-                    "
-                >
-
-                    {{ p + 1 }}
-
-                </button>
-
-            }
-
-
-            <!-- NEXT -->
-
-            <button
-                [disabled]="currentPage >= totalPages - 1"
-                (click)="goToPage(currentPage + 1)"
-
-                class="
-                    flex
-                    h-8
-                    w-8
-                    items-center
-                    justify-center
-
-                    rounded-lg
-
-                    border
-                    border-gray-200
-
-                    bg-white
-
-                    text-gray-500
-
-                    hover:bg-gray-100
-
-                    disabled:cursor-not-allowed
-                    disabled:opacity-40
-
-                    dark:border-slate-700
-                    dark:bg-slate-900
-                    dark:text-gray-400
-                    dark:hover:bg-slate-800
-
-                    transition
-                "
-            >
-
-                <i class="pi pi-angle-left rtl:rotate-180"></i>
-
-            </button>
-
-
-            <!-- LAST -->
-
-            <button
-                [disabled]="currentPage >= totalPages - 1"
-                (click)="goToPage(totalPages - 1)"
-
-                class="
-                    flex
-                    h-8
-                    w-8
-                    items-center
-                    justify-center
-
-                    rounded-lg
-
-                    border
-                    border-gray-200
-
-                    bg-white
-
-                    text-gray-500
-
-                    hover:bg-gray-100
-
-                    disabled:cursor-not-allowed
-                    disabled:opacity-40
-
-                    dark:border-slate-700
-                    dark:bg-slate-900
-                    dark:text-gray-400
-                    dark:hover:bg-slate-800
-
-                    transition
-                "
-            >
-
-                <i class="pi pi-angle-double-left rtl:rotate-180"></i>
-
-            </button>
-
-        </div>
-
+      <select
+        [ngModel]="pageSize"
+        (ngModelChange)="onPageSizeSelect($event)"
+        class="rounded-lg border border-slate-200 bg-white px-2 py-1 text-sm text-slate-600 outline-none focus:border-blue-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
+      >
+        <option *ngFor="let size of pageSizeOptions" [ngValue]="size">{{ size }} / page</option>
+      </select>
     </div>
 
-}
+    <div class="flex items-center gap-1">
+      <button
+        type="button"
+        [disabled]="currentPage === 0"
+        (click)="goToPage(currentPage - 1)"
+        class="inline-flex h-8 w-8 items-center justify-center rounded-md text-slate-500 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-400 dark:hover:bg-slate-800"
+      >
+        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+
+      <button
+        *ngIf="pages[0] > 0"
+        type="button"
+        (click)="goToPage(0)"
+        class="inline-flex h-8 min-w-8 items-center justify-center rounded-md px-2 text-sm text-slate-500 transition hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"
+      >1</button>
+      <span *ngIf="pages[0] > 1" class="px-1 text-slate-300 dark:text-slate-600">…</span>
+
+      <button
+        *ngFor="let page of pages"
+        type="button"
+        (click)="goToPage(page)"
+        class="inline-flex h-8 min-w-8 items-center justify-center rounded-md px-2 text-sm font-medium transition"
+        [ngClass]="page === currentPage
+          ? 'bg-blue-600 text-white dark:bg-blue-500'
+          : 'text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800'"
+      >{{ page + 1 }}</button>
+
+      <span *ngIf="pages[pages.length - 1] < totalPages - 2" class="px-1 text-slate-300 dark:text-slate-600">…</span>
+      <button
+        *ngIf="pages[pages.length - 1] < totalPages - 1"
+        type="button"
+        (click)="goToPage(totalPages - 1)"
+        class="inline-flex h-8 min-w-8 items-center justify-center rounded-md px-2 text-sm text-slate-500 transition hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"
+      >{{ totalPages }}</button>
+
+      <button
+        type="button"
+        [disabled]="currentPage >= totalPages - 1"
+        (click)="goToPage(currentPage + 1)"
+        class="inline-flex h-8 w-8 items-center justify-center rounded-md text-slate-500 transition hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-400 dark:hover:bg-slate-800"
+      >
+        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- single row-menu panel, fixed-positioned next to whichever trigger was clicked -->
+  <div
+    *ngIf="openedRow"
+    class="shared-table-menu-panel fixed z-50 w-44 overflow-hidden rounded-lg border border-slate-200 bg-white py-1 shadow-lg dark:border-slate-700 dark:bg-slate-800"
+    [style.top.px]="menuPosition.top"
+    [style.left.px]="menuPosition.left"
+  >
+    <button
+      *ngFor="let action of visibleActions(openedRow)"
+      type="button"
+      (click)="action.handler(openedRow); closeMenu()"
+      class="flex w-full items-center gap-2 px-3 py-2 text-left text-sm transition"
+      [ngClass]="getActionClasses(action.color)"
+    >
+      <i [class]="action.icon"></i>
+      {{ action.label }}
+    </button>
+  </div>
+
+  <p-toast></p-toast>
+</div>

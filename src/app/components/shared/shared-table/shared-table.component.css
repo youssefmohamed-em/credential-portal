@@ -1,40 +1,54 @@
-:host ::ng-deep .custom-table {
-    border-radius: 16px;
-    overflow: hidden;
-    border: 1px solid #e5e7eb;
+:host {
+  display: block;
 }
 
-/* Light Mode */
-:host ::ng-deep .custom-table .p-datatable-header,
-:host ::ng-deep .custom-table .p-datatable-thead > tr > th {
-    background: #ffffff;
-    color: #1f2937;
-    border-color: #e5e7eb;
-    font-weight: 600;
+/* Let Tailwind utility classes fully control the p-tag badge look */
+:host ::ng-deep .p-tag {
+  border-radius: 9999px;
+  padding: 0.15rem 0.65rem;
+  font-size: 0.75rem;
+  line-height: 1.25rem;
+  background: transparent;
 }
 
-:host ::ng-deep .custom-table .p-datatable-tbody > tr {
-    background: #ffffff;
-    color: #374151;
+/* Keep the tooltip readable in both themes */
+:host ::ng-deep .p-tooltip .p-tooltip-text {
+  font-size: 0.75rem;
+  padding: 0.35rem 0.6rem;
+  border-radius: 0.375rem;
 }
 
-:host ::ng-deep .custom-table .p-datatable-tbody > tr:hover {
-    background: #f8fafc;
+/* Smooth row menu appearance */
+:host ::ng-deep .row-menu-enter {
+  animation: shared-table-fade-in 0.12s ease-out;
 }
 
-/* Dark Mode */
-.dark :host ::ng-deep .custom-table .p-datatable-header,
-.dark :host ::ng-deep .custom-table .p-datatable-thead > tr > th {
-    background: #1e1e22;
-    color: white;
-    border-color: #333;
+@keyframes shared-table-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-.dark :host ::ng-deep .custom-table .p-datatable-tbody > tr {
-    background: #18181b;
-    color: #e5e7eb;
+/* Thin, theme-aware scrollbar for the table's horizontal overflow */
+:host ::ng-deep .overflow-x-auto {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
 }
 
-.dark :host ::ng-deep .custom-table .p-datatable-tbody > tr:hover {
-    background: #27272a;
-}   
+:host ::ng-deep .overflow-x-auto::-webkit-scrollbar {
+  height: 6px;
+}
+
+:host ::ng-deep .overflow-x-auto::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 9999px;
+}
+
+:host-context(.dark) ::ng-deep .overflow-x-auto::-webkit-scrollbar-thumb {
+  background-color: #475569;
+}

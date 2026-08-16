@@ -1,6 +1,6 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule,DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import { Component, EventEmitter, HostListener, inject, Input, Output } from '@angular/core';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
@@ -45,7 +45,19 @@ export interface SharedTableColumn {
   };
 
   customRender?: (row: any) => string;
+
+
+   cellColor?:
+    | 'primary'
+    | 'success'
+    | 'danger'
+    | 'warning'
+    | 'info'
+    | 'secondary'
+    | ((row: any) => 'primary' | 'success' | 'danger' | 'warning' | 'info' | 'secondary' | undefined);
+
 }
+
 export interface SharedTableAction {
   icon: string;
   label: string;
@@ -71,6 +83,7 @@ export interface SharedTableAction {
     TagModule,
     PaginatorModule,
     ToastModule,
+    DatePipe,
     RippleModule, Tooltip],
   templateUrl: './shared-table.component.html',
   styleUrl: './shared-table.component.css',
@@ -119,6 +132,10 @@ export class SharedTableComponent {
 
   pageSizeOptions = [10, 25, 50, 100];
   openedRow: any = null;
+  menuPosition: { top: number; left: number } = { top: 0, left: 0 };
+
+  // ---- filter panel / global search state (UI-only, additive) ----
+  showFilterPanel = false;
 
 
   public translation = inject(TranslationService);
@@ -152,19 +169,83 @@ export class SharedTableComponent {
   }
 
 
-toggleMenu(row: any) {
-  this.openedRow = this.openedRow === row ? null : row;
+toggleMenu(event: MouseEvent, row: any): void {
+  event.stopPropagation();
+
+  if (this.openedRow === row) {
+    this.closeMenu();
+    return;
+  }
+
+  const button = event.currentTarget as HTMLElement;
+  const rect = button.getBoundingClientRect();
+  const menuWidth = 176; // matches w-44
+  const viewportWidth = window.innerWidth;
+
+  // keep the menu inside the viewport regardless of RTL/LTR
+  let left = rect.right - menuWidth;
+  if (left < 8) left = rect.left;
+  if (left + menuWidth > viewportWidth - 8) left = viewportWidth - menuWidth - 8;
+
+  this.menuPosition = { top: rect.bottom + 4, left };
+  this.openedRow = row;
 }
+
+
+closeMenu(): void {
+  this.openedRow = null;
+}
+
 getBadgeClasses(color: string): string {
-  const map: { [key: string]: string } = {
-    danger: 'bg-red-100 text-red-600 dark:bg-red-950/50 dark:text-red-400',       // unqualified
-    warning: 'bg-orange-100 text-orange-600 dark:bg-orange-950/50 dark:text-orange-400', // negotiation
-    success: 'bg-emerald-100 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400', // qualified
-    info: 'bg-sky-100 text-sky-600 dark:bg-sky-950/50 dark:text-sky-400',        // new
-    primary: 'bg-purple-100 text-purple-600 dark:bg-purple-950/50 dark:text-purple-400', // renewal
-    secondary: 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300',
-  };
-  return map[color] || map['secondary'];
+  switch (color) {
+    case 'success':
+      return `
+        !bg-green-100
+        !text-green-700
+        dark:!bg-green-900/30
+        dark:!text-green-400
+      `;
+
+    case 'secondary':
+      return `
+        !bg-gray-100
+        !text-gray-700
+        dark:!bg-gray-800
+        dark:!text-gray-400
+      `;
+
+    case 'warning':
+      return `
+        !bg-yellow-100
+        !text-yellow-700
+        dark:!bg-yellow-900/30
+        dark:!text-yellow-400
+      `;
+
+    case 'danger':
+      return `
+        !bg-red-100
+        !text-red-700
+        dark:!bg-red-900/30
+        dark:!text-red-400
+      `;
+
+    case 'info':
+      return `
+        !bg-blue-100
+        !text-blue-700
+        dark:!bg-blue-900/30
+        dark:!text-blue-400
+      `;
+
+    default:
+      return `
+        !bg-gray-100
+        !text-gray-700
+        dark:!bg-gray-800
+        dark:!text-gray-400
+      `;
+  }
 }
 
 getActionClasses(color?: string): string {
@@ -206,6 +287,29 @@ getActionClasses(color?: string): string {
 
   get hasFilterableColumns(): boolean {
     return this.columns.some((c) => c.filterable);
+  }
+
+  // ---- global search (additive: reuses the existing filterValues/filterChange contract) ----
+  onGlobalSearch(value: string): void {
+    this.filterValues = { ...this.filterValues, _search: value };
+    this.filterChange.emit(this.filterValues);
+  }
+
+  toggleFilterPanel(): void {
+    this.showFilterPanel = !this.showFilterPanel;
+  }
+
+  clearFilters(): void {
+    this.filterValues = {};
+    this.showFilterPanel = false;
+    this.filterChange.emit(this.filterValues);
+  }
+
+  get activeFilterCount(): number {
+    return Object.keys(this.filterValues).filter((key) => {
+      const val = this.filterValues[key];
+      return val !== undefined && val !== null && val !== '';
+    }).length;
   }
 
   // ---- pagination ----
@@ -254,5 +358,9 @@ get colSpan(): number {
 }
 
 
-
+@HostListener('window:scroll', ['$event'])
+@HostListener('window:resize')
+onScrollOrResize(_event?: Event): void {
+  this.closeMenu();
+}
 }

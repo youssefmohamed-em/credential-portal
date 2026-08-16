@@ -11,7 +11,8 @@ import {
   MachinesService,
   Machine,
   CreateMachineRequest,
-  MachineCommandType
+  MachineCommandType,
+  MachineStatus
 } from '../../services/machines.service';
 import { SharedTableAction, SharedTableColumn, SharedTableComponent } from '../shared/shared-table/shared-table.component';
 import { MessageService } from 'primeng/api';
@@ -24,7 +25,7 @@ import { Toast } from 'primeng/toast';
   imports: [
     HeaderComponent,
     SharedTableComponent,
-    Toast
+    Toast,
   ],
 
   templateUrl: './registeration.component.html',
@@ -38,6 +39,8 @@ export class RegisterationComponent implements OnInit {
   private messageService = inject(MessageService);
 
   machines = signal<Machine[]>([]);
+  selectedStatus = signal<MachineStatus |undefined> (undefined);
+  selectedLocation= signal('');
 
   loading = signal(false);
   showCreateModal = signal(false);
@@ -197,11 +200,16 @@ commandOptions: {
   // API
   // =========================
 
-  getMachines(): void {
+ getMachines(): void {
 
-    this.loading.set(true);
+  this.loading.set(true);
 
-    this.machinesService.getMachines().subscribe({
+  this.machinesService
+    .getMachines(
+      this.selectedStatus(),
+      this.selectedLocation()
+    )
+    .subscribe({
 
       next: (response) => {
 
@@ -223,8 +231,7 @@ commandOptions: {
       }
 
     });
-
-  }
+}
 
 
   // =========================
@@ -450,5 +457,39 @@ closeCommandModal(): void {
 
 selectCommand(command: MachineCommandType): void {
   this.selectedCommand.set(command);
+}
+
+
+
+
+onFilterChange(filters: { [key: string]: any }): void {
+
+  const status = filters['status'];
+  const location = filters['location'];
+
+  this.selectedStatus.set(
+    status
+      ? status as MachineStatus
+      : undefined
+  );
+
+  this.selectedLocation.set(
+    location ?? ''
+  );
+
+  this.currentPage.set(0);
+
+  this.getMachines();
+}
+
+
+clearFilters(): void {
+
+  this.selectedStatus.set(undefined);
+  this.selectedLocation.set('');
+
+  this.currentPage.set(0);
+
+  this.getMachines();
 }
 }

@@ -26,6 +26,10 @@ export class TranslationService {
 
       // Products
       'PRODUCTS.TITLE': 'Products',
+      'PRODUCTS.PRODUCT_REFERENCE': 'Product Reference',
+      'PRODUCTS.ID': 'ID',
+      'PRODUCTS.GOLD_WEIGHT': 'Gold Weight',
+      'PRODUCTS.PRODUCT_BOX_BARCODE': 'Product Box Barcode',
       'PRODUCTS.DESCRIPTION': 'Manage Your Products',
       'PRODUCTS.ADD': 'Add Product',
       'PRODUCTS.WEIGHT': 'Weight',
@@ -45,6 +49,7 @@ export class TranslationService {
       'PRODUCTS.CREATED': 'Product created successfully.',
       'PRODUCTS.UPDATED': 'Product updated successfully.',
       'PRODUCTS.DELETED': 'Product deleted successfully.',
+      'PRODUCTS.NO_BARCODE_TO_DELETE': 'This product has no barcode to delete.',
       'PRODUCTS.DELETE_CONFIRM': 'Are you sure you want to delete this product?',
       'PRODUCTS.SELECT_REFERENCE': 'Select a product reference',
       'PRODUCTS.LOADING_REFERENCES': 'Loading product references...',
@@ -186,14 +191,16 @@ export class TranslationService {
       'TABLE.TO': 'to',
       'TABLE.OF': 'of',
       'TABLE.RESULTS': 'results',
-
+      'TABLE.FILTERS': 'Filters',
+      'TABLE.CLEAR': 'Clear',
+      'TABLE.ALL': 'All',
       'TABLE.ACTIONS': 'Actions',
       'TABLE.SEARCH': 'Search...',
       'TABLE.SELECT': 'Select...',
       'TABLE.PREVIOUS': 'Previous',
       'TABLE.NEXT': 'Next',
       'TABLE.ROWS_PER_PAGE': 'Rows per page',
-
+      'TABLE.MORE_ACTIONS': 'More Actions',
       'TABLE.MENU': 'More Actions',
 
 
@@ -231,6 +238,12 @@ export class TranslationService {
       'MESSAGES.LOGIN_SUCCESS':
         'Welcome back',
 
+      'MESSAGES.WARNING':
+        'Warning',
+
+      'MESSAGES.FILL_REQUIRED_FIELDS':
+        'Please fill in the required fields.',
+
       'MESSAGES.ERROR':
         'Error',
 
@@ -260,6 +273,7 @@ export class TranslationService {
       'PRODUCTS.CREATED': 'تم إنشاء المنتج بنجاح.',
       'PRODUCTS.UPDATED': 'تم تعديل المنتج بنجاح.',
       'PRODUCTS.DELETED': 'تم حذف المنتج بنجاح.',
+      'PRODUCTS.NO_BARCODE_TO_DELETE': 'هذا المنتج لا يحتوي على باركود للحذف.',
       'PRODUCTS.DELETE_CONFIRM': 'هل أنت متأكد من حذف هذا المنتج؟',
 
 
@@ -273,6 +287,10 @@ export class TranslationService {
       'PRODUCTS.CALCULATED_PRICE': 'السعر المحسوب',
       'PRODUCTS.NOT_SPECIFIED': 'غير محدد',
       'PRODUCTS.EMPTY': 'لا توجد منتجات حالياً',
+      'PRODUCTS.PRODUCT_REFERENCE': 'مرجع المنتج',
+      'PRODUCTS.ID': 'المعرّف',
+      'PRODUCTS.GOLD_WEIGHT': 'وزن الذهب',
+      'PRODUCTS.PRODUCT_BOX_BARCODE': 'باركود علبة المنتج',
 
 
       // Reports
@@ -321,14 +339,16 @@ export class TranslationService {
       'TABLE.TO': 'إلى',
       'TABLE.OF': 'من',
       'TABLE.RESULTS': 'نتيجة',
-
+      'TABLE.FILTERS': 'الفلاتر',
+      'TABLE.CLEAR': 'مسح',
+      'TABLE.ALL': 'الكل',
       'TABLE.ACTIONS': 'الإجراءات',
       'TABLE.SEARCH': 'بحث...',
       'TABLE.SELECT': 'اختر...',
       'TABLE.PREVIOUS': 'السابق',
       'TABLE.NEXT': 'التالي',
       'TABLE.ROWS_PER_PAGE': 'عدد الصفوف',
-
+      'TABLE.MORE_ACTIONS': 'المزيد من الإجراءات',
       'TABLE.MENU': 'المزيد',
 
 
@@ -459,6 +479,12 @@ export class TranslationService {
 
       'MESSAGES.LOGIN_SUCCESS':
         '\u0645\u0631\u062d\u0628\u064b\u0627 \u0628\u0639\u0648\u062f\u062a\u0643',
+
+      'MESSAGES.WARNING':
+        'تحذير',
+
+      'MESSAGES.FILL_REQUIRED_FIELDS':
+        'يرجى تعبئة الحقول المطلوبة.',
 
       'MESSAGES.ERROR':
         'خطأ',

@@ -10,6 +10,7 @@ import {
 import {
   Product,
   ProductPrice,
+  ProductsResponse,
   ProductsService
 } from '../../services/product.service';
 
@@ -86,31 +87,57 @@ export class ProductsComponent implements OnInit {
   pageSize = signal(10);
   currentPage = signal(0);
 
-  tableColumns: SharedTableColumn[] = [
-    { key: 'id', label: 'ID', width: '80px' },
-    { key: 'name', label: 'PRODUCTS.NAME', value: (product: CatalogProduct) => this.getProductName(product) },
-    { key: 'category', label: 'PRODUCTS.CATEGORY', value: (product: CatalogProduct) => this.getProductCategory(product) },
-    { key: 'productType', label: 'PRODUCTS.TYPE', value: (product: CatalogProduct) => this.getProductType(product) },
-    { key: 'purity', label: 'PRODUCTS.PURITY' },
-    { key: 'weight', label: 'PRODUCTS.WEIGHT', value: (product: CatalogProduct) => this.getProductWeight(product) },
-    { key: 'liveGoldPrice', label: 'PRODUCTS.LIVE_GOLD_PRICE', value: (product: CatalogProduct) => this.getLiveGoldPrice(product) },
-    { key: 'calculatedPrice', label: 'PRODUCTS.CALCULATED_PRICE', value: (product: CatalogProduct) => this.getCalculatedPrice(product) }
-  ];
+  get tableColumns(): SharedTableColumn[] {
+    return [
+      {
+        key: 'id',
+        label: this.translation.translate('PRODUCTS.ID'),
+        width: '80px'
+      },
+      {
+        key: 'barcode',
+        label: this.translation.translate('PRODUCTS.BARCODE')
+      },
+      {
+        key: 'productReference',
+        label: this.translation.translate('PRODUCTS.PRODUCT_REFERENCE')
+      },
+      {
+        key: 'goldWeight',
+        label: this.translation.translate('PRODUCTS.GOLD_WEIGHT')
+      },
+      {
+        key: 'purity',
+        label: this.translation.translate('PRODUCTS.PURITY'),
+        cellColor: 'warning'
+      },
+      {
+        key: 'basePriceFormula',
+        label: this.translation.translate('PRODUCTS.BASE_PRICE_FORMULA')
+      },
+      {
+        key: 'productBoxBarcode',
+        label: this.translation.translate('PRODUCTS.PRODUCT_BOX_BARCODE')
+      }
+    ];
+  }
 
-  tableActions: SharedTableAction[] = [
-    {
-      icon: 'pi pi-pencil',
-      label: 'PRODUCTS.EDIT',
-      color: 'warning',
-      handler: (product: CatalogProduct) => this.openProductModal(product)
-    },
-    {
-      icon: 'pi pi-trash',
-      label: 'PRODUCTS.DELETE',
-      color: 'danger',
-      handler: (product: CatalogProduct) => this.deleteProduct(product)
-    }
-  ];
+  get tableActions(): SharedTableAction[] {
+    return [
+      {
+        icon: 'pi pi-pencil',
+        label: this.translation.translate('PRODUCTS.EDIT'),
+        color: 'warning',
+        handler: (product: CatalogProduct) => this.openProductModal(product)
+      },
+      {
+        icon: 'pi pi-trash',
+        label: this.translation.translate('PRODUCTS.DELETE'),
+        color: 'danger',
+        handler: (product: CatalogProduct) => this.deleteProduct(product)
+      }
+    ];
+  }
 
   headerButtons = computed<HeaderButton[]>(() => [
     {
@@ -133,7 +160,44 @@ export class ProductsComponent implements OnInit {
   // Get Products (now sourced from getProductsRefrence)
   // =========================
 
+
+
+
   getProducts(): void {
+  this.loading.set(true);
+
+  this.productService
+    .getProducts(this.currentPage(), this.pageSize())
+    .subscribe({
+      next: (response: ProductsResponse) => {
+        this.products = response.content;
+
+        this.totalElements.set(response.totalElements);
+        this.currentPage.set(response.number);
+
+        this.loading.set(false);
+      },
+
+      error: (error) => {
+        this.products = [];
+        this.totalElements.set(0);
+        this.loading.set(false);
+
+        this.messageService.add({
+          severity: 'error',
+          summary: this.translation.translate('MESSAGES.ERROR'),
+          detail:
+            error?.error?.message ||
+            error?.error?.error ||
+            `Error ${error?.status}`,
+          life: 4000
+        });
+
+        console.error('Get products error:', error);
+      }
+    });
+}
+  getProductsRefrence(): void {
     this.loading.set(true);
 
     this.productService.getProductsRefrence(this.currentPage(), this.pageSize()).subscribe({
@@ -426,57 +490,61 @@ export class ProductsComponent implements OnInit {
   // Delete Product
   // =========================
 
-  deleteProduct(product: CatalogProduct): void {
+ deleteProduct(product: CatalogProduct): void {
 
-    if (!product.barcode) {
-      this.messageService.add({
-        severity: 'warn',
-        summary: this.translation.translate('MESSAGES.WARNING'),
-        detail: this.translation.translate('PRODUCTS.NO_BARCODE_TO_DELETE'),
-        life: 3000
-      });
-      return;
-    }
+  const barcode = product.barcode?.trim();
 
-    this.confirmationService.confirm({
-      message: this.translation.translate('PRODUCTS.DELETE_CONFIRM'),
-      header: this.translation.translate('PRODUCTS.DELETE'),
-      icon: 'pi pi-exclamation-triangle',
-      accept: () => {
-
-        this.productService.deleteProduct(product.barcode!).subscribe({
-
-          next: () => {
-
-            this.messageService.add({
-              severity: 'success',
-              summary: this.translation.translate('MESSAGES.SUCCESS'),
-              detail: this.translation.translate('PRODUCTS.DELETED'),
-              life: 3000
-            });
-
-            this.getProducts();
-          },
-
-          error: (error) => {
-
-            this.messageService.add({
-              severity: 'error',
-              summary: this.translation.translate('MESSAGES.ERROR'),
-              detail:
-                error?.error?.message ||
-                error?.error?.error ||
-                `Error ${error?.status}`,
-              life: 4000
-            });
-
-            console.error('Delete product error:', error);
-          }
-
-        });
-      }
+  if (!barcode) {
+    this.messageService.add({
+      severity: 'warn',
+      summary: this.translation.translate('MESSAGES.WARNING'),
+      detail: this.translation.translate('PRODUCTS.NO_ID_TO_DELETE'),
+      life: 3000
     });
+    return;
   }
+
+  this.confirmationService.confirm({
+    message: this.translation.translate('PRODUCTS.DELETE_CONFIRM'),
+    header: this.translation.translate('PRODUCTS.DELETE'),
+    icon: 'pi pi-exclamation-triangle',
+    acceptLabel: this.translation.translate('COMMON.DELETE'),
+    rejectLabel: this.translation.translate('COMMON.CANCEL'),
+    accept: () => {
+
+      this.productService.deleteProduct(barcode).subscribe({
+
+        next: () => {
+
+          this.messageService.add({
+            severity: 'success',
+            summary: this.translation.translate('MESSAGES.SUCCESS'),
+            detail: this.translation.translate('PRODUCTS.DELETED'),
+            life: 3000
+          });
+
+          this.getProducts();
+        },
+
+        error: (error) => {
+
+          this.messageService.add({
+            severity: 'error',
+            summary: this.translation.translate('MESSAGES.ERROR'),
+            detail:
+              error?.error?.message ||
+              error?.error?.error ||
+              `Error ${error?.status}`,
+            life: 4000
+          });
+
+          console.error('Delete product error:', error);
+        }
+
+      });
+    }
+  });
+}
 
   // =========================
   // Product Saved

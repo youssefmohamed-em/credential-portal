@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { ConfigService } from './config.service';
 
@@ -19,8 +19,8 @@ export interface CreateMachineResponse {
   apiKey: string;
   status: string;
 }
-export type MachineStatus ='ONLINE'|'OFFLINE';
 
+export type MachineStatus = 'ONLINE' | 'OFFLINE';
 
 export type MachineCommandType =
   | 'RESTART'
@@ -36,11 +36,37 @@ export class MachinesService {
   private http = inject(HttpClient);
   private config = inject(ConfigService);
 
-  private readonly endpoint = `${this.config.baseUrl}/secure/tms/machines`;
+  private readonly endpoint =
+    `${this.config.baseUrl}/secure/tms/machines`;
 
-  getMachines() {
-    return this.http.get<Machine[]>(this.endpoint);
+  // =========================
+  // GET MACHINES
+  // =========================
+
+  getMachines(
+    status?: MachineStatus,
+    location?: string
+  ) {
+
+    let params = new HttpParams();
+
+    if (status) {
+      params = params.set('status', status);
+    }
+
+    if (location?.trim()) {
+      params = params.set('location', location.trim());
+    }
+
+    return this.http.get<Machine[]>(
+      this.endpoint,
+      { params }
+    );
   }
+
+  // =========================
+  // CREATE
+  // =========================
 
   createMachine(data: CreateMachineRequest) {
     return this.http.post<CreateMachineResponse>(
@@ -49,17 +75,31 @@ export class MachinesService {
     );
   }
 
-  updateMachineStatus(id:number, status:MachineStatus){
+  // =========================
+  // UPDATE STATUS
+  // =========================
+
+  updateMachineStatus(
+    id: number,
+    status: MachineStatus
+  ) {
     return this.http.patch<Machine>(
       `${this.endpoint}/${id}/status`,
-      {status}
-    )
+      { status }
+    );
   }
 
-  sendCommand(machineId:number , commandType:MachineCommandType){
+  // =========================
+  // SEND COMMAND
+  // =========================
+
+  sendCommand(
+    machineId: number,
+    commandType: MachineCommandType
+  ) {
     return this.http.post<void>(
       `${this.endpoint}/${machineId}/commands`,
-      {commandType}
-    )
+      { commandType }
+    );
   }
 }

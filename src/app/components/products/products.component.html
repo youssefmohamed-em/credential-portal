@@ -1,5 +1,9 @@
 <p-toast position="top-right"></p-toast>
-<p-confirmDialog></p-confirmDialog> 
+<p-confirmDialog
+  styleClass="custom-delete-dialog"
+  acceptButtonStyleClass="custom-delete-accept-btn"
+  rejectButtonStyleClass="custom-delete-reject-btn">
+</p-confirmDialog>
 <app-header
   [title]="translation.translate('PRODUCTS.TITLE')"
   [description]="translation.translate('PRODUCTS.DESCRIPTION')"

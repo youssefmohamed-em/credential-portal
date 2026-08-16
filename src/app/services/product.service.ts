@@ -328,67 +328,10 @@ export class ProductsService {
     return this.http.post<Port>(`${this.baseUrl}/ports`, body);
   }
 
-  // =========================================================
-  // Payments
-  // =========================================================
+  
 
-  /** POST /payments/:orderId/verify */
-  verifyPayment(orderId: number): Observable<Payment> {
-    return this.http.post<Payment>(`${this.baseUrl}/payments/${orderId}/verify`, {});
-  }
 
-  /** POST /payments/webhook */
-  handlePaymentWebhook(body: PaymentWebhookRequest): Observable<Payment> {
-    return this.http.post<Payment>(`${this.baseUrl}/payments/webhook`, body);
-  }
 
-  /** POST /payments/orders */
-  createOrder(body: CreateOrderRequest): Observable<Order> {
-    return this.http.post<Order>(`${this.baseUrl}/payments/orders`, body);
-  }
-
-  // =========================================================
-  // Inventory
-  // =========================================================
-
-  /** POST /inventory/dispense-ack */
-  acknowledgeDispense(body: DispenseAckRequest): Observable<DispenseAckResponse> {
-    return this.http.post<DispenseAckResponse>(`${this.baseUrl}/inventory/dispense-ack`, body);
-  }
-
-  // =========================================================
-  // Customers
-  // =========================================================
-
-  /** POST /api/v1/customers/kyc/ocr-result */
-  submitOcrResult(body: OcrResultRequest): Observable<OcrResultResponse> {
-    return this.http.post<OcrResultResponse>(`${this.baseUrl}/api/v1/customers/kyc/ocr-result`, body);
-  }
-
-  /** PATCH /api/v1/customers/:customerId/profile */
-  mergeCustomerProfile(customerId: number, body: MergeProfileRequest): Observable<Customer> {
-    return this.http.patch<Customer>(`${this.baseUrl}/api/v1/customers/${customerId}/profile`, body);
-  }
-
-  /** PATCH /api/v1/customers/phone */
-  findOrCreateCustomerByPhone(phoneNumber: string): Observable<Customer> {
-    return this.http.patch<Customer>(`${this.baseUrl}/api/v1/customers/phone`, { phoneNumber });
-  }
-
-  // =========================================================
-  // Pricing
-  // =========================================================
-
-  /** GET /api/v1/pricing/current */
-  getCurrentPricing(): Observable<PricingSnapshot> {
-    return this.http.get<PricingSnapshot>(`${this.baseUrl}/api/v1/pricing/current`);
-  }
-
-  // =========================================================
-  // Reports
-  // =========================================================
-
- 
 
   getProductsRefrence(
     page: number = 0,
