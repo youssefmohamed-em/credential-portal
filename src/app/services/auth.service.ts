@@ -27,6 +27,9 @@ export interface LoginResponse {
   session_state: string;
   scope: string;
 }
+export interface ForgotPasswordRequest {
+  username: string;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -52,10 +55,24 @@ saveLogin(response: LoginResponse) {
   localStorage.setItem('refreshToken', response.refresh_token);
 }
 
+logout() {
+  localStorage.removeItem('token');
+  localStorage.removeItem('refreshToken');
+  localStorage.removeItem('user');
+  this.user.set(null);
+}
+
 loadUSer(){
   const user =localStorage.getItem('user');
   if(user){
     this.user.set(JSON.parse(user))
   }
 }
+
+  forgotPassword(data: ForgotPasswordRequest) {
+    return this.http.post(
+      `${this.config.baseUrl}/public/auth/forget-password`,
+      data
+    );
+  }
 }

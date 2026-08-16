@@ -1,154 +1,930 @@
-<!-- Table Component -->
-<p-table 
-    [value]="data" 
-    [loading]="loading" 
-    dataKey="id" 
-    responsiveLayout="scroll"
-    styleClass="p-datatable-borderless rounded-2xl overflow-hidden border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm transition-colors duration-200">
+<div
+    class="
+        overflow-hidden
+        rounded-2xl
+        border border-gray-200
+        bg-white
+        shadow-sm
 
-    <!-- Header -->
-    <ng-template pTemplate="header">
-        <tr class="bg-gray-100 dark:bg-slate-800">
-            @for(column of columns; track column.key){
-                <th [style.width]="column.width" (click)="onSort(column)" 
-                    class="!bg-transparent px-6 py-4 text-start font-bold text-sm !text-gray-900 dark:!text-gray-100 border-b border-gray-200 dark:border-slate-700 cursor-pointer hover:bg-gray-200/50 dark:hover:bg-slate-700/50 transition">
-                    <div class="flex items-center gap-2">
-                        <span>{{column.label}}</span>
-                        @if(column.sortable){
-                            <p-sortIcon [field]="column.key" class="!text-gray-700 dark:!text-gray-300"></p-sortIcon>
-                        }
-                    </div>
-                </th>
-            }
+        dark:border-slate-700
+        dark:bg-slate-900
 
-            @if(menuActions.length){
-                <th class="!bg-transparent w-28 px-6 py-4 text-center font-bold text-sm !text-gray-900 dark:!text-gray-100 border-b border-gray-200 dark:border-slate-700">
-                    التحكم
-                </th>
-            }
-        </tr>
-    </ng-template>
+        transition-colors
+        duration-200
+    "
+>
 
-    <!-- Body -->
-    <ng-template pTemplate="body" let-row>
-        <tr class="!bg-transparent border-b border-gray-100 dark:border-slate-800/60 hover:bg-amber-50/30 dark:hover:bg-slate-800/40 transition-colors">
-            @for(column of columns; track column.key){
-                <td class="!bg-transparent px-6 py-4 text-sm font-medium text-gray-800 dark:text-gray-200 align-middle">
-                    @switch(column.type){
-                        @case('badge'){
-                            @let badge = getBadge(row,column);
-                            <p-tag [value]="badge.label" [severity]="badge.color" styleClass="!text-xs !font-semibold !px-2.5 !py-1 !rounded-full"></p-tag>
-                        }
-                        @case('custom'){
-                            <span [innerHTML]="getCustomHtml(row,column)"></span>
-                        }
-                        @default{
-                            <span class="truncate block max-w-xs" [title]="getCellValue(row,column)">
-                                {{ getCellValue(row,column) }}
+    <p-table
+        [value]="data"
+        [loading]="loading"
+        dataKey="id"
+        responsiveLayout="scroll"
+        styleClass="p-datatable-sm"
+    >
+
+        <!-- ================= HEADER ================= -->
+
+        <ng-template pTemplate="header">
+
+            <tr>
+
+                @for(column of columns; track column.key) {
+
+                    <th
+                        [style.width]="column.width"
+
+                        class="
+                            px-6
+                            py-4
+
+                            !bg-gray-50
+                            !text-gray-700
+
+                            border-b
+                            border-gray-200
+
+                            text-start
+                            align-middle
+
+                            text-xs
+                            font-semibold
+                            uppercase
+                            tracking-wide
+
+                            dark:!bg-slate-800
+                            dark:!text-gray-200
+                            dark:border-slate-700
+
+                            transition-colors
+                            duration-200
+                        "
+
+                        [class.cursor-pointer]="column.sortable"
+                        [class.select-none]="column.sortable"
+
+                        [class.hover:!bg-gray-100]="column.sortable"
+                        [class.dark:hover:!bg-slate-700]="column.sortable"
+
+                        (click)="onSort(column)"
+                    >
+
+                        <div
+                            class="
+                                flex
+                                items-center
+                                gap-2
+                            "
+
+                            [class.justify-center]="
+                                column.align === 'center'
+                            "
+
+                            [class.justify-end]="
+                                column.align === 'right'
+                            "
+                        >
+
+                            <span>
+                                {{ translation.translate(column.label) }}
                             </span>
+
+                            @if(column.sortable) {
+
+                                <p-sortIcon
+                                    [field]="column.key"
+
+                                    class="
+                                        !text-gray-400
+                                        dark:!text-gray-500
+                                    "
+                                >
+                                </p-sortIcon>
+
+                            }
+
+                        </div>
+
+                    </th>
+
+                }
+
+
+                @if(menuActions.length) {
+
+                    <th
+                        class="
+                            w-24
+                            px-6
+                            py-4
+
+                            !bg-gray-50
+                            !text-gray-700
+
+                            border-b
+                            border-gray-200
+
+                            text-center
+
+                            text-xs
+                            font-semibold
+                            uppercase
+                            tracking-wide
+
+                            dark:!bg-slate-800
+                            dark:!text-gray-200
+                            dark:border-slate-700
+
+                            transition-colors
+                            duration-200
+                        "
+                    >
+
+                        {{ translation.translate('TABLE.ACTIONS') }}
+
+                    </th>
+
+                }
+
+            </tr>
+
+        </ng-template>
+
+
+        <!-- ================= BODY ================= -->
+
+        <ng-template pTemplate="body" let-row>
+
+            <tr
+                class="
+                    border-b
+                    border-gray-100
+
+                    !bg-white
+
+                    hover:!bg-amber-50/40
+
+                    dark:border-slate-800
+                    dark:!bg-slate-900
+                    dark:hover:!bg-slate-800/60
+
+                    transition-colors
+                    duration-150
+                "
+            >
+
+                @for(column of columns; track column.key) {
+
+                    <td
+                        class="
+                            px-6
+                            py-4
+
+                            !bg-transparent
+
+                            text-sm
+                            text-gray-700
+
+                            align-middle
+
+                            dark:!text-gray-300
+                        "
+
+                        [class.text-center]="
+                            column.align === 'center'
+                        "
+
+                        [class.text-right]="
+                            column.align === 'right'
+                        "
+                    >
+
+                        @switch(column.type) {
+
+
+                            <!-- BADGE -->
+
+                            @case('badge') {
+
+                                @let badge = getBadge(row, column);
+
+                                <p-tag
+                                    [value]="badge.label"
+                                    [severity]="badge.color"
+
+                                    styleClass="
+                                        !rounded-full
+                                        !px-3
+                                        !py-1
+                                        !text-xs
+                                        !font-semibold
+                                    "
+                                >
+                                </p-tag>
+
+                            }
+
+
+                            <!-- CUSTOM -->
+
+                            @case('custom') {
+
+                                <span
+                                    class="
+                                        inline-flex
+                                        items-center
+                                    "
+
+                                    [innerHTML]="
+                                        getCustomHtml(row, column)
+                                    "
+                                >
+                                </span>
+
+                            }
+
+
+                            <!-- DEFAULT -->
+
+                            @default {
+
+                                <span
+                                    class="
+                                        block
+                                        max-w-xs
+                                        truncate
+
+                                        font-medium
+
+                                        text-gray-800
+
+                                        dark:text-gray-100
+                                    "
+
+                                    [title]="
+                                        getCellValue(row, column)
+                                    "
+                                >
+
+                                    {{ getCellValue(row, column) }}
+
+                                </span>
+
+                            }
+
                         }
+
+                    </td>
+
+                }
+
+
+                <!-- ACTIONS -->
+
+                @if(menuActions.length) {
+
+                    <td
+                        class="
+                            px-6
+                            py-4
+
+                            !bg-transparent
+
+                            text-center
+                            align-middle
+                        "
+                    >
+
+                        <div
+                            class="
+                                flex
+                                items-center
+                                justify-center
+                                gap-1
+                            "
+                        >
+
+                            @for(
+                                action of visibleActions(row);
+                                track action.label
+                            ) {
+
+                                <p-button
+                                    [icon]="action.icon"
+                                    [text]="true"
+                                    [rounded]="true"
+
+                                    [pTooltip]="
+                                        translation.translate(
+                                            action.label
+                                        )
+                                    "
+
+                                    tooltipPosition="top"
+
+                                    styleClass="
+                                        !h-9
+                                        !w-9
+                                        !p-0
+
+                                        !text-gray-500
+
+                                        hover:!bg-amber-50
+                                        hover:!text-amber-600
+
+                                        dark:!text-gray-400
+
+                                        dark:hover:!bg-amber-500/10
+                                        dark:hover:!text-amber-400
+
+                                        transition-colors
+                                        duration-150
+                                    "
+
+                                    (click)="action.handler(row)"
+                                >
+                                </p-button>
+
+                            }
+
+                        </div>
+
+                    </td>
+
+                }
+
+            </tr>
+
+        </ng-template>
+
+
+        <!-- ================= LOADING ================= -->
+
+        <ng-template pTemplate="loadingbody">
+
+            @for(row of [1,2,3,4,5]; track row) {
+
+                <tr
+                    class="
+                        border-b
+                        border-gray-100
+
+                        !bg-white
+
+                        dark:border-slate-800
+                        dark:!bg-slate-900
+                    "
+                >
+
+                    @for(column of columns; track column.key) {
+
+                        <td class="px-6 py-5">
+
+                            <div
+                                class="
+                                    h-4
+                                    w-3/4
+                                    rounded-md
+
+                                    bg-gray-200
+
+                                    dark:bg-slate-700
+
+                                    animate-pulse
+                                "
+                            >
+                            </div>
+
+                        </td>
+
                     }
-                </td>
+
+                    @if(menuActions.length) {
+
+                        <td class="px-6 py-5">
+
+                            <div
+                                class="
+                                    mx-auto
+                                    h-8
+                                    w-8
+                                    rounded-full
+
+                                    bg-gray-200
+
+                                    dark:bg-slate-700
+
+                                    animate-pulse
+                                "
+                            >
+                            </div>
+
+                        </td>
+
+                    }
+
+                </tr>
+
             }
 
-            @if(menuActions.length){
-                <td class="!bg-transparent px-6 py-4 text-center align-middle">
-                    <div class="flex items-center justify-center gap-1">
-                        @for(action of visibleActions(row); track action.label){
-                            <p-button [icon]="action.icon" [text]="true" [rounded]="true" [pTooltip]="action.label" tooltipPosition="top"
-                                styleClass="!w-8 !h-8 !p-0 text-gray-500 hover:text-amber-600 dark:text-gray-400 dark:hover:text-amber-400 hover:bg-amber-100/50 dark:hover:bg-amber-500/10 transition-colors"
-                                (click)="action.handler(row)">
-                            </p-button>
-                        }
+        </ng-template>
+
+
+        <!-- ================= EMPTY ================= -->
+
+        <ng-template pTemplate="emptymessage">
+
+            <tr>
+
+                <td
+                    [attr.colspan]="colSpan"
+
+                    class="
+                        !bg-white
+                        !px-6
+                        !py-16
+
+                        dark:!bg-slate-900
+                    "
+                >
+
+                    <div
+                        class="
+                            flex
+                            flex-col
+                            items-center
+                            justify-center
+                            gap-3
+                        "
+                    >
+
+                        <div
+                            class="
+                                flex
+                                h-14
+                                w-14
+                                items-center
+                                justify-center
+
+                                rounded-full
+
+                                bg-gray-100
+
+                                dark:bg-slate-800
+                            "
+                        >
+
+                            <i
+                                class="
+                                    pi
+                                    pi-inbox
+                                    text-xl
+
+                                    text-gray-400
+
+                                    dark:text-gray-500
+                                "
+                            >
+                            </i>
+
+                        </div>
+
+
+                        <span
+                            class="
+                                text-sm
+                                font-semibold
+
+                                text-gray-700
+
+                                dark:text-gray-200
+                            "
+                        >
+
+                            {{ translation.translate('TABLE.NO_DATA') }}
+
+                        </span>
+
+
+                        <span
+                            class="
+                                text-xs
+
+                                text-gray-400
+
+                                dark:text-gray-500
+                            "
+                        >
+
+                            No records available to display
+
+                        </span>
+
                     </div>
+
                 </td>
-            }
-        </tr>
-    </ng-template>
 
-    <!-- Empty State -->
-    <ng-template pTemplate="emptymessage">
-        <tr>
-            <td [attr.colspan]="colSpan" class="text-center py-12 text-gray-400 dark:text-gray-500">
-                لا توجد بيانات متاحة حالياً
-            </td>
-        </tr>
-    </ng-template>
+            </tr>
 
-</p-table>
+        </ng-template>
 
-<!-- Custom Pagination Bar -->
+    </p-table>
+
+</div>
+
+
+<!-- ================= PAGINATION ================= -->
+
 @if(showPagination && totalElements > 0) {
-    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 mt-2 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-2xl shadow-sm text-sm text-gray-600 dark:text-gray-300 transition-colors">
-        
-        <!-- تفاصيل عدد العناصر -->
-        <div class="flex items-center gap-4">
-            <span>
-                عرض <span class="font-bold text-gray-900 dark:text-gray-100">{{ startItem }}</span> إلى 
-                <span class="font-bold text-gray-900 dark:text-gray-100">{{ endItem }}</span> من أصل 
-                <span class="font-bold text-gray-900 dark:text-gray-100">{{ totalElements }}</span> عنصر
+
+    <div
+        class="
+            mt-3
+
+            flex
+            flex-col
+            gap-4
+
+            rounded-2xl
+
+            border
+            border-gray-200
+
+            bg-white
+
+            px-6
+            py-4
+
+            text-sm
+            text-gray-600
+
+            shadow-sm
+
+            dark:border-slate-700
+            dark:bg-slate-900
+            dark:text-gray-300
+
+            transition-colors
+            duration-200
+
+            sm:flex-row
+            sm:items-center
+            sm:justify-between
+        "
+    >
+
+        <!-- INFORMATION -->
+
+        <div
+            class="
+                flex
+                items-center
+                gap-4
+            "
+        >
+
+            <span class="whitespace-nowrap">
+
+                {{ translation.translate('TABLE.SHOWING') }}
+
+                <span
+                    class="
+                        font-semibold
+                        text-gray-900
+
+                        dark:text-white
+                    "
+                >
+                    {{ startItem }}
+                </span>
+
+                {{ translation.translate('TABLE.TO') }}
+
+                <span
+                    class="
+                        font-semibold
+                        text-gray-900
+
+                        dark:text-white
+                    "
+                >
+                    {{ endItem }}
+                </span>
+
+                {{ translation.translate('TABLE.OF') }}
+
+                <span
+                    class="
+                        font-semibold
+                        text-gray-900
+
+                        dark:text-white
+                    "
+                >
+                    {{ totalElements }}
+                </span>
+
+                {{ translation.translate('TABLE.RESULTS') }}
+
             </span>
 
-            <!-- اختيار عدد العناصر في الصفحة -->
-            <div class="flex items-center gap-2 border-r border-gray-200 dark:border-slate-700 pr-4">
-                <span>لكل صفحة:</span>
-                <select 
-                    [ngModel]="pageSize" 
-                    (ngModelChange)="onPageSizeSelect($event)"
-                    class="bg-gray-50 dark:bg-slate-800 border border-gray-300 dark:border-slate-700 text-gray-900 dark:text-gray-100 rounded-lg px-2 py-1 text-sm focus:ring-2 focus:ring-amber-500 outline-none cursor-pointer">
-                    @for(size of pageSizeOptions; track size) {
-                        <option [value]="size">{{ size }}</option>
-                    }
-                </select>
+
+            <div
+                class="
+                    hidden
+                    h-6
+
+                    border-r
+                    border-gray-200
+
+                    dark:border-slate-700
+
+                    sm:block
+                "
+            >
             </div>
+
+
+            <!-- ROWS PER PAGE -->
+
+            <div
+                class="
+                    flex
+                    items-center
+                    gap-2
+                "
+            >
+
+                <span class="whitespace-nowrap">
+
+                    {{ translation.translate('TABLE.ROWS_PER_PAGE') }}
+
+                </span>
+
+
+                <select
+                    [ngModel]="pageSize"
+                    (ngModelChange)="onPageSizeSelect($event)"
+
+                    class="
+                        cursor-pointer
+
+                        rounded-lg
+
+                        border
+                        border-gray-200
+
+                        bg-gray-50
+
+                        px-2
+                        py-1.5
+
+                        text-sm
+                        text-gray-800
+
+                        outline-none
+
+                        focus:border-amber-400
+                        focus:ring-2
+                        focus:ring-amber-500/20
+
+                        dark:border-slate-700
+                        dark:bg-slate-800
+                        dark:text-gray-200
+
+                        transition
+                    "
+                >
+
+                    @for(size of pageSizeOptions; track size) {
+
+                        <option [value]="size">
+                            {{ size }}
+                        </option>
+
+                    }
+
+                </select>
+
+            </div>
+
         </div>
 
-        <!-- أزرار التنقل بين الصفحات -->
-        <div class="flex items-center gap-1">
-            <!-- زر الصفحة الأولى -->
-            <button 
-                [disabled]="currentPage === 0" 
+
+        <!-- PAGINATION -->
+
+        <div
+            class="
+                flex
+                items-center
+                justify-center
+                gap-1
+            "
+        >
+
+            <!-- FIRST -->
+
+            <button
+                [disabled]="currentPage === 0"
                 (click)="goToPage(0)"
-                class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 dark:border-slate-700 hover:bg-gray-100 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition">
+
+                class="
+                    flex
+                    h-8
+                    w-8
+                    items-center
+                    justify-center
+
+                    rounded-lg
+
+                    border
+                    border-gray-200
+
+                    bg-white
+
+                    text-gray-500
+
+                    hover:bg-gray-100
+
+                    disabled:cursor-not-allowed
+                    disabled:opacity-40
+
+                    dark:border-slate-700
+                    dark:bg-slate-900
+                    dark:text-gray-400
+                    dark:hover:bg-slate-800
+
+                    transition
+                "
+            >
+
                 <i class="pi pi-angle-double-right rtl:rotate-180"></i>
+
             </button>
 
-            <!-- زر الصفحة السابقة -->
-            <button 
-                [disabled]="currentPage === 0" 
+
+            <!-- PREVIOUS -->
+
+            <button
+                [disabled]="currentPage === 0"
                 (click)="goToPage(currentPage - 1)"
-                class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 dark:border-slate-700 hover:bg-gray-100 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition">
+
+                class="
+                    flex
+                    h-8
+                    w-8
+                    items-center
+                    justify-center
+
+                    rounded-lg
+
+                    border
+                    border-gray-200
+
+                    bg-white
+
+                    text-gray-500
+
+                    hover:bg-gray-100
+
+                    disabled:cursor-not-allowed
+                    disabled:opacity-40
+
+                    dark:border-slate-700
+                    dark:bg-slate-900
+                    dark:text-gray-400
+                    dark:hover:bg-slate-800
+
+                    transition
+                "
+            >
+
                 <i class="pi pi-angle-right rtl:rotate-180"></i>
+
             </button>
 
-            <!-- أرقام الصفحات -->
+
+            <!-- PAGE NUMBERS -->
+
             @for(p of pages; track p) {
-                <button 
+
+                <button
                     (click)="goToPage(p)"
-                    [class]="p === currentPage 
-                        ? '!bg-amber-500 !text-white !border-amber-500 font-bold' 
-                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 border-gray-200 dark:border-slate-700'"
-                    class="w-8 h-8 flex items-center justify-center rounded-lg border text-sm transition">
+
+                    [class]="
+                        p === currentPage
+                            ? '!bg-amber-500 !text-white !border-amber-500 font-semibold'
+                            : 'bg-white dark:bg-slate-900 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-slate-700 hover:bg-gray-100 dark:hover:bg-slate-800'
+                    "
+
+                    class="
+                        flex
+                        h-8
+                        min-w-8
+                        items-center
+                        justify-center
+
+                        rounded-lg
+
+                        border
+
+                        px-2
+
+                        text-sm
+
+                        transition
+                    "
+                >
+
                     {{ p + 1 }}
+
                 </button>
+
             }
 
-            <!-- زر الصفحة التالية -->
-            <button 
-                [disabled]="currentPage >= totalPages - 1" 
+
+            <!-- NEXT -->
+
+            <button
+                [disabled]="currentPage >= totalPages - 1"
                 (click)="goToPage(currentPage + 1)"
-                class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 dark:border-slate-700 hover:bg-gray-100 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition">
+
+                class="
+                    flex
+                    h-8
+                    w-8
+                    items-center
+                    justify-center
+
+                    rounded-lg
+
+                    border
+                    border-gray-200
+
+                    bg-white
+
+                    text-gray-500
+
+                    hover:bg-gray-100
+
+                    disabled:cursor-not-allowed
+                    disabled:opacity-40
+
+                    dark:border-slate-700
+                    dark:bg-slate-900
+                    dark:text-gray-400
+                    dark:hover:bg-slate-800
+
+                    transition
+                "
+            >
+
                 <i class="pi pi-angle-left rtl:rotate-180"></i>
+
             </button>
 
-            <!-- زر الصفحة الأخيرة -->
-            <button 
-                [disabled]="currentPage >= totalPages - 1" 
+
+            <!-- LAST -->
+
+            <button
+                [disabled]="currentPage >= totalPages - 1"
                 (click)="goToPage(totalPages - 1)"
-                class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 dark:border-slate-700 hover:bg-gray-100 dark:hover:bg-slate-800 disabled:opacity-40 disabled:cursor-not-allowed transition">
+
+                class="
+                    flex
+                    h-8
+                    w-8
+                    items-center
+                    justify-center
+
+                    rounded-lg
+
+                    border
+                    border-gray-200
+
+                    bg-white
+
+                    text-gray-500
+
+                    hover:bg-gray-100
+
+                    disabled:cursor-not-allowed
+                    disabled:opacity-40
+
+                    dark:border-slate-700
+                    dark:bg-slate-900
+                    dark:text-gray-400
+                    dark:hover:bg-slate-800
+
+                    transition
+                "
+            >
+
                 <i class="pi pi-angle-double-left rtl:rotate-180"></i>
+
             </button>
+
         </div>
 
     </div>
+
 }

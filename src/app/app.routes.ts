@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './components/auth/login/login.component';
+import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
     {path:'',redirectTo:'login',pathMatch:"full"},
@@ -10,11 +11,13 @@ export const routes: Routes = [
         (m) => m.LoginComponent
       )
   },
-  {path:'dashboard',loadComponent :()=> import('./components/dashboard/dashboard.component').then((m)=>m.DashboardComponent ) ,children:[
+  {path:'forget-password',loadComponent: ()=>import('./components/auth/login/forget-password/forget-password.component').then((m)=>m.ForgetPasswordComponent )},
+  {path:'dashboard',canActivate: [authGuard], loadComponent :()=> import('./components/dashboard/dashboard.component').then((m)=>m.DashboardComponent ) ,children:[
 
     {path:'', redirectTo:'products',pathMatch:'full'},
     {path:'registeration',loadComponent:()=> import('./components/registeration/registeration.component').then((m)=>m.RegisterationComponent )},
     {path:'products',loadComponent:()=>import('./components/products/products.component').then((m)=>m.ProductsComponent )},
+    {path:'reports',loadComponent:()=> import('./components/reports/reports.component').then( (m)=>m.ReportsComponent )},
     
   ]
 

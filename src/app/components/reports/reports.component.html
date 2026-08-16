@@ -1,0 +1,561 @@
+<div
+  class="min-h-full p-6 space-y-6
+         bg-[#f5f6f8] dark:bg-slate-950
+         transition-colors duration-200"
+>
+
+  <!-- Page Header -->
+  <div class="flex items-center justify-between">
+
+    <div>
+      <h1
+        class="text-xl font-semibold
+               text-slate-800 dark:text-slate-100"
+      >
+       {{ translation.translate('REPORTS.TITLE') }}
+      </h1>
+
+      <p
+        class="mt-1 text-sm
+               text-slate-500 dark:text-slate-400"
+      >
+          {{ translation.translate('REPORTS.DESCRIPTION') }}
+      </p>
+    </div>
+
+  </div>
+
+
+  <!-- ================================================= -->
+  <!-- Finance -->
+  <!-- ================================================= -->
+
+  <section
+    class="rounded-2xl
+           border border-slate-200 dark:border-slate-800
+           bg-white dark:bg-slate-900
+           p-5 shadow-sm
+           transition-colors duration-200"
+  >
+
+    <!-- Section Header -->
+    <div class="flex items-center justify-between mb-5">
+
+      <div class="flex items-center gap-3">
+
+        <!-- Icon -->
+        <div
+          class="flex h-10 w-10 items-center justify-center
+                 rounded-xl
+                 bg-amber-50 dark:bg-amber-500/10
+                 text-amber-500 dark:text-amber-400"
+        >
+          <i class="pi pi-wallet text-lg"></i>
+        </div>
+
+        <div>
+
+          <h2
+            class="text-base font-semibold
+                   text-slate-800 dark:text-slate-100"
+          >
+          
+  {{ translation.translate('REPORTS.FINANCE.TITLE') }}
+          </h2>
+
+          <p
+            class="text-xs
+                   text-slate-500 dark:text-slate-400"
+          >
+            {{ translation.translate('REPORTS.FINANCE.DESCRIPTION') }}
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <!-- Refresh -->
+      <button
+        type="button"
+        (click)="loadFinanceReport()"
+        [disabled]="financeLoading()"
+        class="flex h-9 w-9 items-center justify-center
+               rounded-lg
+               border border-slate-200 dark:border-slate-700
+               text-slate-500 dark:text-slate-400
+               hover:border-amber-400
+               hover:text-amber-500
+               hover:bg-amber-50 dark:hover:bg-amber-500/10
+               transition-all duration-200
+               disabled:opacity-50"
+      >
+        <i
+          class="pi"
+          [class.pi-refresh]="!financeLoading()"
+          [class.pi-spin]="financeLoading()"
+        ></i>
+      </button>
+
+    </div>
+
+
+    <!-- Finance Loading -->
+    @if (financeLoading()) {
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+        <div
+          class="h-32 rounded-xl
+                 bg-slate-200 dark:bg-slate-800
+                 animate-pulse"
+        ></div>
+
+        <div
+          class="h-32 rounded-xl
+                 bg-slate-200 dark:bg-slate-800
+                 animate-pulse"
+        ></div>
+
+      </div>
+
+    } @else {
+
+      <!-- Finance Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+        <!-- Paid Orders -->
+        <div
+          class="group rounded-xl
+                 border border-slate-200 dark:border-slate-800
+                 bg-white dark:bg-slate-900
+                 p-5
+                 hover:border-amber-300 dark:hover:border-amber-500/50
+                 hover:shadow-md
+                 transition-all duration-200"
+        >
+
+          <div class="flex items-start justify-between">
+
+            <div>
+
+              <p
+                class="text-sm
+                       text-slate-500 dark:text-slate-400"
+              >
+                  {{ translation.translate('REPORTS.FINANCE.PAID_ORDERS') }}
+              </p>
+
+              <p
+                class="mt-2 text-3xl font-semibold
+                       text-slate-800 dark:text-slate-100"
+              >
+                {{ financeReport()?.paidOrders ?? 0 | number }}
+              </p>
+
+              <p
+                class="mt-2 text-xs
+                       text-slate-400 dark:text-slate-500"
+              >
+               {{ translation.translate('REPORTS.FINANCE.PAID_ORDERS_DESCRIPTION') }}
+              </p>
+
+            </div>
+
+
+            <div
+              class="flex h-11 w-11 items-center justify-center
+                     rounded-xl
+                     bg-amber-50 dark:bg-amber-500/10
+                     text-amber-500 dark:text-amber-400
+                     group-hover:bg-amber-100
+                     dark:group-hover:bg-amber-500/20
+                     transition-colors"
+            >
+              <i class="pi pi-shopping-cart text-lg"></i>
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- Total Paid Amount -->
+        <div
+          class="group rounded-xl
+                 border border-slate-200 dark:border-slate-800
+                 bg-white dark:bg-slate-900
+                 p-5
+                 hover:border-amber-300 dark:hover:border-amber-500/50
+                 hover:shadow-md
+                 transition-all duration-200"
+        >
+
+          <div class="flex items-start justify-between">
+
+            <div>
+
+              <p
+                class="text-sm
+                       text-slate-500 dark:text-slate-400"
+              >
+             
+  {{ translation.translate('REPORTS.FINANCE.TOTAL_PAID_AMOUNT') }}
+              </p>
+
+              <p
+                class="mt-2 text-3xl font-semibold
+                       text-slate-800 dark:text-slate-100"
+              >
+                {{ financeReport()?.totalPaidAmount ?? 0 | number:'1.2-2' }}
+              </p>
+
+              <p
+                class="mt-2 text-xs
+                       text-slate-400 dark:text-slate-500"
+              >
+               {{ translation.translate('REPORTS.FINANCE.TOTAL_PAID_AMOUNT_DESCRIPTION') }}
+              </p>
+
+            </div>
+
+
+            <div
+              class="flex h-11 w-11 items-center justify-center
+                     rounded-xl
+                     bg-amber-50 dark:bg-amber-500/10
+                     text-amber-500 dark:text-amber-400
+                     group-hover:bg-amber-100
+                     dark:group-hover:bg-amber-500/20
+                     transition-colors"
+            >
+              <i class="pi pi-money-bill text-lg"></i>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    }
+
+
+    <!-- Finance Generated At -->
+    @if (financeReport()?.generatedAt) {
+
+      <div
+        class="mt-4 pt-4
+               border-t border-slate-100 dark:border-slate-800
+               flex items-center gap-2
+               text-xs text-slate-400 dark:text-slate-500"
+      >
+
+        <i class="pi pi-clock"></i>
+
+        <span>
+          Generated
+          {{ financeReport()?.generatedAt | date:'medium' }}
+        </span>
+
+      </div>
+
+    }
+
+  </section>
+
+
+
+  <!-- ================================================= -->
+  <!-- Compliance -->
+  <!-- ================================================= -->
+
+  <section
+    class="rounded-2xl
+           border border-slate-200 dark:border-slate-800
+           bg-white dark:bg-slate-900
+           p-5 shadow-sm
+           transition-colors duration-200"
+  >
+
+    <!-- Section Header -->
+    <div class="flex items-center justify-between mb-5">
+
+      <div class="flex items-center gap-3">
+
+        <div
+          class="flex h-10 w-10 items-center justify-center
+                 rounded-xl
+                 bg-amber-50 dark:bg-amber-500/10
+                 text-amber-500 dark:text-amber-400"
+        >
+          <i class="pi pi-shield text-lg"></i>
+        </div>
+
+        <div>
+
+          <h2
+            class="text-base font-semibold
+                   text-slate-800 dark:text-slate-100"
+          >
+            
+  {{ translation.translate('REPORTS.COMPLIANCE.TITLE') }}
+          </h2>
+
+          <p
+            class="text-xs
+                   text-slate-500 dark:text-slate-400"
+          >
+             {{ translation.translate('REPORTS.COMPLIANCE.DESCRIPTION') }}
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <!-- Refresh -->
+      <button
+        type="button"
+        (click)="loadComplianceReport()"
+        [disabled]="complianceLoading()"
+        class="flex h-9 w-9 items-center justify-center
+               rounded-lg
+               border border-slate-200 dark:border-slate-700
+               text-slate-500 dark:text-slate-400
+               hover:border-amber-400
+               hover:text-amber-500
+               hover:bg-amber-50 dark:hover:bg-amber-500/10
+               transition-all duration-200
+               disabled:opacity-50"
+      >
+        <i
+          class="pi"
+          [class.pi-refresh]="!complianceLoading()"
+          [class.pi-spin]="complianceLoading()"
+        ></i>
+      </button>
+
+    </div>
+
+
+    <!-- Compliance Loading -->
+    @if (complianceLoading()) {
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+        <div
+          class="h-32 rounded-xl
+                 bg-slate-200 dark:bg-slate-800
+                 animate-pulse"
+        ></div>
+
+        <div
+          class="h-32 rounded-xl
+                 bg-slate-200 dark:bg-slate-800
+                 animate-pulse"
+        ></div>
+
+        <div
+          class="h-32 rounded-xl
+                 bg-slate-200 dark:bg-slate-800
+                 animate-pulse"
+        ></div>
+
+      </div>
+
+    } @else {
+
+      <!-- Compliance Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+        <!-- Verified -->
+        <div
+          class="group rounded-xl
+                 border border-slate-200 dark:border-slate-800
+                 bg-white dark:bg-slate-900
+                 p-5
+                 hover:border-amber-300 dark:hover:border-amber-500/50
+                 hover:shadow-md
+                 transition-all duration-200"
+        >
+
+          <div class="flex items-start justify-between">
+
+            <div>
+
+              <p
+                class="text-sm
+                       text-slate-500 dark:text-slate-400"
+              >
+                 {{ translation.translate('REPORTS.COMPLIANCE.VERIFIED_CUSTOMERS') }}
+              </p>
+
+              <p
+                class="mt-2 text-3xl font-semibold
+                       text-slate-800 dark:text-slate-100"
+              >
+                {{ complianceReport()?.verifiedCustomers ?? 0 | number }}
+              </p>
+
+              <p
+                class="mt-2 text-xs
+                       text-slate-400 dark:text-slate-500"
+              > {{ translation.translate('REPORTS.COMPLIANCE.VERIFIED_DESCRIPTION') }}
+              </p>
+
+            </div>
+
+            <div
+              class="flex h-11 w-11 items-center justify-center
+                     rounded-xl
+                     bg-amber-50 dark:bg-amber-500/10
+                     text-amber-500 dark:text-amber-400
+                     group-hover:bg-amber-100
+                     dark:group-hover:bg-amber-500/20"
+            >
+              <i class="pi pi-check-circle text-lg"></i>
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- Rejected -->
+        <div
+          class="group rounded-xl
+                 border border-slate-200 dark:border-slate-800
+                 bg-white dark:bg-slate-900
+                 p-5
+                 hover:border-amber-300 dark:hover:border-amber-500/50
+                 hover:shadow-md
+                 transition-all duration-200"
+        >
+
+          <div class="flex items-start justify-between">
+
+            <div>
+
+              <p
+                class="text-sm
+                       text-slate-500 dark:text-slate-400"
+              >
+               {{ translation.translate('REPORTS.COMPLIANCE.REJECTED_CUSTOMERS') }}
+              </p>
+
+              <p
+                class="mt-2 text-3xl font-semibold
+                       text-slate-800 dark:text-slate-100"
+              >
+                {{ complianceReport()?.rejectedCustomers ?? 0 | number }}
+              </p>
+
+              <p
+                class="mt-2 text-xs
+                       text-slate-400 dark:text-slate-500"
+              >
+            {{ translation.translate('REPORTS.COMPLIANCE.REJECTED_DESCRIPTION') }}
+              </p>
+
+            </div>
+
+            <div
+              class="flex h-11 w-11 items-center justify-center
+                     rounded-xl
+                     bg-amber-50 dark:bg-amber-500/10
+                     text-amber-500 dark:text-amber-400
+                     group-hover:bg-amber-100
+                     dark:group-hover:bg-amber-500/20"
+            >
+              <i class="pi pi-times-circle text-lg"></i>
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- Manual Review -->
+        <div
+          class="group rounded-xl
+                 border border-slate-200 dark:border-slate-800
+                 bg-white dark:bg-slate-900
+                 p-5
+                 hover:border-amber-300 dark:hover:border-amber-500/50
+                 hover:shadow-md
+                 transition-all duration-200"
+        >
+
+          <div class="flex items-start justify-between">
+
+            <div>
+
+              <p
+                class="text-sm
+                       text-slate-500 dark:text-slate-400"
+              >
+               {{ translation.translate('REPORTS.COMPLIANCE.MANUAL_REVIEW') }}
+              </p>
+
+              <p
+                class="mt-2 text-3xl font-semibold
+                       text-slate-800 dark:text-slate-100"
+              >
+                {{ complianceReport()?.manualReviewCustomers ?? 0 | number }}
+              </p>
+
+              <p
+                class="mt-2 text-xs
+                       text-slate-400 dark:text-slate-500"
+              >
+               {{ translation.translate('REPORTS.COMPLIANCE.MANUAL_REVIEW_DESCRIPTION') }}
+              </p>
+
+            </div>
+
+            <div
+              class="flex h-11 w-11 items-center justify-center
+                     rounded-xl
+                     bg-amber-50 dark:bg-amber-500/10
+                     text-amber-500 dark:text-amber-400
+                     group-hover:bg-amber-100
+                     dark:group-hover:bg-amber-500/20"
+            >
+              <i class="pi pi-exclamation-triangle text-lg"></i>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    }
+
+
+    <!-- Compliance Generated At -->
+    @if (complianceReport()?.generatedAt) {
+
+      <div
+        class="mt-4 pt-4
+               border-t border-slate-100 dark:border-slate-800
+               flex items-center gap-2
+               text-xs text-slate-400 dark:text-slate-500"
+      >
+
+        <i class="pi pi-clock"></i>
+
+        <span>
+        
+  {{ translation.translate('REPORTS.GENERATED') }}
+          {{ complianceReport()?.generatedAt | date:'medium' }}
+        </span>
+
+      </div>
+
+    }
+
+  </section>
+
+</div>

@@ -199,11 +199,10 @@ this.authService.saveLogin(response);
           });
 
 
-          // Navigate Dashboard
-
-          this.router.navigate([
-            '/dashboard'
-          ]);
+          // Navigate Dashboard after a small delay to ensure state is updated
+          setTimeout(() => {
+            this.router.navigate(['/dashboard']);
+          }, 500);
 
         },
 

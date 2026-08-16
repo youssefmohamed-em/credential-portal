@@ -10,7 +10,8 @@ import { TranslationService } from '../../services/translate.service';
 import {
   MachinesService,
   Machine,
-  CreateMachineRequest
+  CreateMachineRequest,
+  MachineCommandType
 } from '../../services/machines.service';
 import { SharedTableAction, SharedTableColumn, SharedTableComponent } from '../shared/shared-table/shared-table.component';
 import { MessageService } from 'primeng/api';
@@ -42,12 +43,47 @@ export class RegisterationComponent implements OnInit {
   showCreateModal = signal(false);
   formError = signal<string | null>(null);
   totalElements = computed(() => this.machines().length);
+  selectedMachine = signal<Machine | null>(null);
 
-pageSize = signal(10);
+  showToggleModal = signal(false);
 
-currentPage = signal(0);
+  pageSize = signal(10);
+
+  currentPage = signal(0);
+
+  showCommandModal = signal(false);
+
+selectedCommandMachine = signal<Machine | null>(null);
+
+selectedCommand = signal<MachineCommandType | null>(null);
 
 
+commandOptions: {
+  value: MachineCommandType;
+  label: string;
+  icon: string;
+}[] = [
+  {
+    value: 'RESTART',
+    label: 'Restart Machine',
+    icon: 'pi pi-refresh'
+  },
+  {
+    value: 'FORCE_OFFLINE',
+    label: 'Force Offline',
+    icon: 'pi pi-power-off'
+  },
+  {
+    value: 'REQUEST_DIAGNOSTICS',
+    label: 'Request Diagnostics',
+    icon: 'pi pi-wrench'
+  },
+  {
+    value: 'DISPENSE_TEST',
+    label: 'Dispense Test',
+    icon: 'pi pi-play'
+  }
+];
   // =========================
   // Table Columns
   // =========================
@@ -60,41 +96,41 @@ currentPage = signal(0);
       sortable: true
     },
 
-{
-  key: 'status',
-  label: 'STATUS',
-  sortable: true,
-  type: 'badge', // 👈 أضفنا نوع العمود badge
-  badgeConfig: (status: string) => {
-    const isOnline = status?.toUpperCase() === 'ONLINE';
-    return {
-      label: status,
-      // primeNG Tag severity: 'success' للون الأخضر، و 'secondary' للون الرمادي
-      color: isOnline ? 'success' : 'secondary' 
-    };
-  },
-  filterable: true,
-  filterType: 'select',
-  filterOptions: [
-    { value: 'ONLINE', label: 'Online' },
-    { value: 'OFFLINE', label: 'Offline' }
-  ]
-},
-
     {
-      key: 'location',
-      label: 'LOCATION',
+      key: 'status',
+      label: 'STATUS',
       sortable: true,
+      type: 'badge', // 👈 أضفنا نوع العمود badge
+      badgeConfig: (status: string) => {
+        const isOnline = status?.toUpperCase() === 'ONLINE';
+        return {
+          label: status,
+          // primeNG Tag severity: 'success' للون الأخضر، و 'secondary' للون الرمادي
+          color: isOnline ? 'success' : 'secondary'
+        };
+      },
       filterable: true,
-      filterType: 'text'
+      filterType: 'select',
+      filterOptions: [
+        { value: 'ONLINE', label: 'Online' },
+        { value: 'OFFLINE', label: 'Offline' }
+      ]
     },
 
-    {
-      key: 'registeredAt',
-      label: 'REGISTERED_AT',
-      sortable: true,
-      type: 'date'
-    }
+      {
+        key: 'location',
+        label: 'LOCATION',
+        sortable: true,
+        filterable: true,
+        filterType: 'text'
+      },
+
+      {
+        key: 'registeredAt',
+        label: 'REGISTERED_AT',
+        sortable: true,
+        type: 'date'
+      }
 
   ];
 
@@ -105,25 +141,24 @@ currentPage = signal(0);
 
   tableActions: SharedTableAction[] = [
 
-    {
-      icon: 'pi pi-pencil',
-      label: 'Edit',
-      color: 'primary',
+    
 
+    {
+      icon: 'pi pi-sync',
+      label: 'Toggle Status',
+      color: 'warning',
       handler: (machine: Machine) => {
-        this.editMachine(machine);
+        this.openToggleModal(machine);
       }
     },
-
     {
-      icon: 'pi pi-trash',
-      label: 'Delete',
-      color: 'danger',
-
-      handler: (machine: Machine) => {
-        this.deleteMachine(machine);
-      }
+         icon: 'pi pi-send',
+    label: 'Send Command',
+    color: 'info',
+    handler: (machine: Machine) => {
+      this.openCommandModal(machine);
     }
+  }
 
   ];
 
@@ -213,7 +248,9 @@ currentPage = signal(0);
     const trimmedLocation = location.trim();
 
     if (!trimmedCode || !trimmedLocation) {
-      this.formError.set('Machine code and location are required');
+      this.formError.set(
+        this.translation.translate('MACHINES.CREATE.REQUIRED')
+      );
       return;
     }
 
@@ -232,10 +269,10 @@ currentPage = signal(0);
         this.loading.set(false);
 
         this.messageService.add({
-          severity: "success",
-          summary: "Success",
-          detail: "Machine Created Successfully ."
-        })
+          severity: 'success',
+          summary: this.translation.translate('COMMON.SUCCESS'),
+          detail: this.translation.translate('MACHINES.CREATE.SUCCESS')
+        });
         this.closeCreateModal();
         this.getMachines();
 
@@ -246,15 +283,17 @@ currentPage = signal(0);
         console.error(error);
 
         this.loading.set(false);
-        this.formError.set('Failed to create machine. Please try again.');
+   this.formError.set(
+  this.translation.translate('MACHINES.CREATE.FAILED')
+);
 
-        const message =
-          error?.error?.message ??
-          'Failed to create machine.';
+    const message =
+  error?.error?.message ??
+  this.translation.translate('MACHINES.CREATE.FAILED');
 
         this.messageService.add({
           severity: 'error',
-          summary: 'Error',
+         summary: this.translation.translate('COMMON.ERROR'), 
           detail: message
         });
       }
@@ -283,11 +322,133 @@ currentPage = signal(0);
 
   }
   onPageChange(page: number) {
-  this.currentPage.set(page);
+    this.currentPage.set(page);
+  }
+
+  onPageSizeChange(size: number) {
+    this.pageSize.set(size);
+  }
+
+  openToggleModal(machine: Machine): void {
+
+    this.selectedMachine.set(machine);
+
+    this.showToggleModal.set(true);
+
+  }
+
+  closeToggleModal(): void {
+
+    this.showToggleModal.set(false);
+
+    this.selectedMachine.set(null);
+
+  }
+
+  confirmToggleStatus(): void {
+
+    const machine = this.selectedMachine();
+
+    if (!machine) return;
+
+    const newStatus =
+      machine.status === 'ONLINE'
+        ? 'OFFLINE'
+        : 'ONLINE';
+
+    this.loading.set(true);
+
+    this.machinesService
+      .updateMachineStatus(machine.id, newStatus)
+      .subscribe({
+
+        next: () => {
+
+          this.loading.set(false);
+
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Machine status updated successfully.'
+          });
+
+          this.closeToggleModal();
+
+          this.getMachines();
+
+        },
+
+        error: (err) => {
+
+          console.error(err);
+
+          this.loading.set(false);
+
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Failed to update machine status.'
+          });
+
+        }
+
+      });
+
+  }
+
+sendSelectedCommand(): void {
+  const machine = this.selectedCommandMachine();
+  const command = this.selectedCommand();
+
+  if (!machine || !command) {
+    return;
+  }
+
+  this.loading.set(true);
+
+  this.machinesService
+    .sendCommand(machine.id, command)
+    .subscribe({
+      next: () => {
+        this.loading.set(false);
+
+        this.messageService.add({
+          severity: 'success',
+          summary: this.translation.translate('COMMON.SUCCESS'),
+          detail: `Command ${command} sent successfully.`
+        });
+
+        this.closeCommandModal();
+      },
+
+      error: (error) => {
+        console.error('Failed to send machine command:', error);
+
+        this.loading.set(false);
+
+        this.messageService.add({
+          severity: 'error',
+          summary: this.translation.translate('COMMON.ERROR'),
+          detail: 'Failed to send command.'
+        });
+      }
+    });
 }
 
-onPageSizeChange(size: number) {
-  this.pageSize.set(size);
+openCommandModal(machine: Machine): void {
+  this.selectedCommandMachine.set(machine);
+  this.selectedCommand.set(null);
+  this.showCommandModal.set(true);
 }
 
+closeCommandModal(): void {
+  this.showCommandModal.set(false);
+  this.selectedCommandMachine.set(null);
+  this.selectedCommand.set(null);
+}
+
+
+selectCommand(command: MachineCommandType): void {
+  this.selectedCommand.set(command);
+}
 }

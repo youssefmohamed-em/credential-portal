@@ -1,12 +1,12 @@
 <p-toast position="top-right"></p-toast>
 
-<div class="min-h-screen bg-gradient-to-b from-[#faf9f6] to-[#f3f1ec] flex flex-col">
+<div class="min-h-screen bg-gradient-to-b from-[#faf9f6] to-[#f3f1ec] dark:from-[#121212] dark:to-[#1a1a1a] flex flex-col transition-colors duration-300">
 
   <!-- Header -->
   <header
-    class="h-16 border-b border-gray-200 bg-white/80 backdrop-blur-sm
+    class="h-16 border-b border-gray-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-sm
            flex items-center justify-between
-           px-6 sm:px-10 sticky top-0 z-10"
+           px-6 sm:px-10 sticky top-0 z-10 transition-colors duration-300"
   >
     <!-- Language Button -->
     <button
@@ -14,9 +14,9 @@
       (click)="toggleLanguage()"
       class="flex items-center justify-center
              w-9 h-9 rounded-full
-             text-gray-500
-             hover:text-[#9a7200]
-             hover:bg-yellow-50
+             text-gray-500 dark:text-zinc-400
+             hover:text-[#9a7200] dark:hover:text-yellow-400
+             hover:bg-yellow-50 dark:hover:bg-zinc-800
              active:scale-95
              transition duration-200"
       [title]="translation.lang() === 'ar' ? 'English' : 'العربية'"
@@ -25,7 +25,7 @@
     </button>
 
     <!-- Logo -->
-    <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-[#9a7200]">
+    <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-[#9a7200] dark:text-yellow-500">
       Gold Era
     </h1>
 
@@ -37,13 +37,13 @@
   <main class="flex-1 flex items-center justify-center px-4 py-10 sm:px-6">
 
     <!-- Login Card -->
-    <div class="w-full max-w-md rounded-2xl bg-white shadow-lg shadow-black/5
-                border border-gray-100 px-6 py-8 sm:px-8 sm:py-10
+    <div class="w-full max-w-md rounded-2xl bg-white dark:bg-zinc-900 shadow-lg shadow-black/5 dark:shadow-black/40
+                border border-gray-100 dark:border-zinc-800 px-6 py-8 sm:px-8 sm:py-10
                 transition-all duration-300">
 
       <!-- Logo -->
       <div class="flex justify-center mb-6">
-        <div class="w-16 h-16 sm:w-20 sm:h-20 bg-black border border-yellow-500
+        <div class="w-16 h-16 sm:w-20 sm:h-20 bg-black dark:bg-zinc-950 border border-yellow-500
                     rounded-xl flex items-center justify-center shadow-md">
           <span class="text-yellow-500 font-bold text-xs text-center leading-tight tracking-wide">
             GOLD<br>ERA
@@ -53,10 +53,10 @@
 
       <!-- Title -->
       <div class="text-center mb-8">
-        <h2 class="text-xl sm:text-2xl font-semibold text-gray-800">
+        <h2 class="text-xl sm:text-2xl font-semibold text-gray-800 dark:text-zinc-100">
           {{ translation.translate('LOGIN.WELCOME') }}
         </h2>
-        <p class="mt-2 text-sm text-gray-500">
+        <p class="mt-2 text-sm text-gray-500 dark:text-zinc-400">
           {{ translation.translate('LOGIN.WELCOME_MESSAGE') }}
         </p>
       </div>
@@ -66,40 +66,39 @@
 
         <!-- Email -->
         <div>
-          <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+          <label for="email" class="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-2">
             {{ translation.translate('LOGIN.EMAIL') }}
           </label>
 
-         <!-- Email -->
-<div class="relative">
-  <i class="pi pi-envelope absolute start-0 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
-  <input
-    id="email"
-    type="email"
-    formControlName="email"
-    autocomplete="username"
-    [placeholder]="translation.translate('LOGIN.EMAIL_PLACEHOLDER')"
-    class="w-full border-0 border-b border-gray-300
-           bg-transparent ps-6 pe-0 py-3
-           text-sm text-black
-           placeholder-gray-400
-           outline-none
-           transition duration-200
-           focus:border-yellow-500
-           focus:ring-0"
-    [class.border-red-500]="
-      loginForm.controls.email.invalid &&
-      loginForm.controls.email.touched
-    "
-  />
-</div>
+          <div class="relative">
+            <i class="pi pi-envelope absolute start-0 top-1/2 -translate-y-1/2 text-gray-400 dark:text-zinc-500 text-sm"></i>
+            <input
+              id="email"
+              type="email"
+              formControlName="email"
+              autocomplete="username"
+              [placeholder]="translation.translate('LOGIN.EMAIL_PLACEHOLDER')"
+              class="w-full border-0 border-b border-gray-300 dark:border-zinc-700
+                     bg-transparent ps-6 pe-0 py-3
+                     text-sm text-black dark:text-white
+                     placeholder-gray-400 dark:placeholder-zinc-500
+                     outline-none
+                     transition duration-200
+                     focus:border-yellow-500 dark:focus:border-yellow-500
+                     focus:ring-0"
+              [class.border-red-500]="
+                loginForm.controls.email.invalid &&
+                loginForm.controls.email.touched
+              "
+            />
+          </div>
 
           <!-- Email Error -->
           @if (
             loginForm.controls.email.invalid &&
             loginForm.controls.email.touched
           ) {
-            <p class="mt-1 text-xs text-red-500 flex items-center gap-1">
+            <p class="mt-1 text-xs text-red-500 dark:text-red-400 flex items-center gap-1">
               <i class="pi pi-exclamation-circle text-[10px]"></i>
               {{ emailError }}
             </p>
@@ -108,52 +107,51 @@
 
         <!-- Password -->
         <div>
-          <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+          <label for="password" class="block text-sm font-medium text-gray-700 dark:text-zinc-300 mb-2">
             {{ translation.translate('LOGIN.PASSWORD') }}
           </label>
 
-        <!-- Password -->
-<div class="relative">
-  <i class="pi pi-lock absolute start-0 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
-  <input
-    id="password"
-    [type]="showPassword() ? 'text' : 'password'"
-    formControlName="password"
-    autocomplete="current-password"
-    [placeholder]="translation.translate('LOGIN.PASSWORD_PLACEHOLDER')"
-    class="w-full border-0 border-b border-gray-300
-           bg-transparent ps-6 pe-10 py-3
-           text-sm text-black
-           placeholder-gray-400
-           outline-none
-           transition duration-200
-           focus:border-yellow-500
-           focus:ring-0"
-    [class.border-red-500]="
-      loginForm.controls.password.invalid &&
-      loginForm.controls.password.touched
-    "
-  />
+          <div class="relative">
+            <i class="pi pi-lock absolute start-0 top-1/2 -translate-y-1/2 text-gray-400 dark:text-zinc-500 text-sm"></i>
+            <input
+              id="password"
+              [type]="showPassword() ? 'text' : 'password'"
+              formControlName="password"
+              autocomplete="current-password"
+              [placeholder]="translation.translate('LOGIN.PASSWORD_PLACEHOLDER')"
+              class="w-full border-0 border-b border-gray-300 dark:border-zinc-700
+                     bg-transparent ps-6 pe-10 py-3
+                     text-sm text-black dark:text-white
+                     placeholder-gray-400 dark:placeholder-zinc-500
+                     outline-none
+                     transition duration-200
+                     focus:border-yellow-500 dark:focus:border-yellow-500
+                     focus:ring-0"
+              [class.border-red-500]="
+                loginForm.controls.password.invalid &&
+                loginForm.controls.password.touched
+              "
+            />
 
-  <button
-    type="button"
-    (click)="togglePassword()"
-    class="absolute end-0 top-1/2
-           -translate-y-1/2
-           text-gray-400
-           hover:text-[#9a7200]
-           transition"
-  >
-    <i [class]="showPassword() ? 'pi pi-eye-slash' : 'pi pi-eye'" class="text-lg"></i>
-  </button>
-</div>
+            <button
+              type="button"
+              (click)="togglePassword()"
+              class="absolute end-0 top-1/2
+                     -translate-y-1/2
+                     text-gray-400 dark:text-zinc-500
+                     hover:text-[#9a7200] dark:hover:text-yellow-400
+                     transition"
+            >
+              <i [class]="showPassword() ? 'pi pi-eye-slash' : 'pi pi-eye'" class="text-lg"></i>
+            </button>
+          </div>
 
           <!-- Password Error -->
           @if (
             loginForm.controls.password.invalid &&
             loginForm.controls.password.touched
           ) {
-            <p class="mt-1 text-xs text-red-500 flex items-center gap-1">
+            <p class="mt-1 text-xs text-red-500 dark:text-red-400 flex items-center gap-1">
               <i class="pi pi-exclamation-circle text-[10px]"></i>
               {{ passwordError }}
             </p>
@@ -163,8 +161,8 @@
         <!-- Forgot Password -->
         <div class="flex justify-end">
           <a
-            routerLink="/forgot-password"
-            class="text-xs text-[#9a7200] hover:text-yellow-600 hover:underline transition"
+            routerLink="/forget-password"
+            class="text-xs text-[#9a7200] dark:text-yellow-500 hover:text-yellow-600 dark:hover:text-yellow-400 hover:underline transition"
           >
             {{ translation.translate('LOGIN.FORGOT_PASSWORD') }}
           </a>
@@ -174,9 +172,10 @@
         <button
           type="submit"
           [disabled]="submitting()"
-          class="w-full bg-[#9a7200]
-                 hover:bg-[#eab94f]
-                 disabled:bg-gray-300
+          class="w-full bg-[#9a7200] dark:bg-yellow-600
+                 hover:bg-[#eab94f] dark:hover:bg-yellow-500
+                 disabled:bg-gray-300 dark:disabled:bg-zinc-700
+                 disabled:text-gray-500 dark:disabled:text-zinc-500
                  disabled:cursor-not-allowed
                  active:scale-[0.99]
                  text-white
@@ -203,16 +202,16 @@
   </main>
 
   <!-- Footer -->
-  <footer class="border-t border-gray-200 bg-white px-6 py-5">
+  <footer class="border-t border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-6 py-5 transition-colors duration-300">
     <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
 
       <!-- Links -->
-      <div class="flex flex-wrap justify-center gap-5 text-[10px] sm:text-xs text-gray-500"></div>
+      <div class="flex flex-wrap justify-center gap-5 text-[10px] sm:text-xs text-gray-500 dark:text-zinc-400"></div>
 
       <!-- Footer Logo -->
       <div class="text-center sm:text-right">
-        <p class="text-lg font-semibold text-[#9a7200]">Gold Era</p>
-        <p class="text-[10px] text-gray-400">
+        <p class="text-lg font-semibold text-[#9a7200] dark:text-yellow-500">Gold Era</p>
+        <p class="text-[10px] text-gray-400 dark:text-zinc-500">
           {{ translation.translate('FOOTER.COPYRIGHT') }}
         </p>
       </div>

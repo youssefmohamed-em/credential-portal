@@ -21,6 +21,13 @@ export interface CreateMachineResponse {
 }
 export type MachineStatus ='ONLINE'|'OFFLINE';
 
+
+export type MachineCommandType =
+  | 'RESTART'
+  | 'FORCE_OFFLINE'
+  | 'REQUEST_DIAGNOSTICS'
+  | 'DISPENSE_TEST';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -46,6 +53,13 @@ export class MachinesService {
     return this.http.patch<Machine>(
       `${this.endpoint}/${id}/status`,
       {status}
+    )
+  }
+
+  sendCommand(machineId:number , commandType:MachineCommandType){
+    return this.http.post<void>(
+      `${this.endpoint}/${machineId}/commands`,
+      {commandType}
     )
   }
 }

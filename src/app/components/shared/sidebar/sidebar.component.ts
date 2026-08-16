@@ -1,6 +1,7 @@
 import { Component, inject, input, output } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { TranslationService } from '../../../services/translate.service';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -18,6 +19,7 @@ export class SidebarComponent {
   toggleCollapsed = output<void>();
 
   private router = inject(Router);
+  private authService = inject(AuthService);
   public translation = inject(TranslationService);
 
   toggleLanguage() {
@@ -25,7 +27,7 @@ export class SidebarComponent {
   }
 
   logout() {
-    localStorage.removeItem('token');
-    this.router.navigate(['/login']);
+    this.authService.logout();
+    this.router.navigate(['/login'], { replaceUrl: true });
   }
 }
